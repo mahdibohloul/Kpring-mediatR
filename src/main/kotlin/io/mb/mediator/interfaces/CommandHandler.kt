@@ -1,4 +1,4 @@
-package io.mb.mediator.interfaces.command
+package io.mb.mediator.interfaces
 
 /**
  * @author Mahdi Bohloul
@@ -10,5 +10,5 @@ interface CommandHandler<in TCommand : Command> {
      * @author Mahdi Bohloul
      * @param command type of the given command
      */
-    fun handle(command: TCommand)
+    suspend fun handle(command: TCommand)
 }

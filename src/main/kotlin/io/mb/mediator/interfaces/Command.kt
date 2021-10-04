@@ -1,4 +1,4 @@
-package io.mb.mediator.interfaces.command
+package io.mb.mediator.interfaces
 
 /**
  * @author Mahdi Bohloul

@@ -1,6 +1,6 @@
 package io.mb.mediator.infrastructure
 
-import io.mb.mediator.interfaces.event.EventHandler
+import io.mb.mediator.interfaces.EventHandler
 import org.springframework.context.ApplicationContext
 import kotlin.reflect.KClass
 

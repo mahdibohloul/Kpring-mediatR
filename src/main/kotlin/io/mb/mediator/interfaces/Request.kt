@@ -1,4 +1,4 @@
-package io.mb.mediator.interfaces.request
+package io.mb.mediator.interfaces
 
 /**
  * Marker interface for a request

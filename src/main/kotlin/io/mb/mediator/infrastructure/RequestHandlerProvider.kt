@@ -1,6 +1,6 @@
 package io.mb.mediator.infrastructure
 
-import io.mb.mediator.interfaces.request.RequestHandler
+import io.mb.mediator.interfaces.RequestHandler
 import org.springframework.context.ApplicationContext
 import kotlin.reflect.KClass
 

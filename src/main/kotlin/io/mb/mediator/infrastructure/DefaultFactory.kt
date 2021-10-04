@@ -1,12 +1,12 @@
 package io.mb.mediator.infrastructure
 
 import io.mb.mediator.interfaces.*
-import io.mb.mediator.interfaces.command.Command
-import io.mb.mediator.interfaces.command.CommandHandler
-import io.mb.mediator.interfaces.event.Event
-import io.mb.mediator.interfaces.event.EventHandler
-import io.mb.mediator.interfaces.request.Request
-import io.mb.mediator.interfaces.request.RequestHandler
+import io.mb.mediator.interfaces.Command
+import io.mb.mediator.interfaces.CommandHandler
+import io.mb.mediator.interfaces.Event
+import io.mb.mediator.interfaces.EventHandler
+import io.mb.mediator.interfaces.Request
+import io.mb.mediator.interfaces.RequestHandler
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationContext

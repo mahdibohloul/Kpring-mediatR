@@ -1,4 +1,4 @@
-package io.mb.mediator.interfaces.event
+package io.mb.mediator.interfaces
 
 /**
  * @author Mahdi Bohloul
@@ -10,5 +10,5 @@ interface EventHandler<in TEvent : Event> {
      * @author Mahdi Bohloul
      * @param event the type of emitted event
      */
-    fun handle(event: TEvent)
+    suspend fun handle(event: TEvent)
 }
