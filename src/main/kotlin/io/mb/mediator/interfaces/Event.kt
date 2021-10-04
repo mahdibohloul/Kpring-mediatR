@@ -1,4 +1,4 @@
-package io.mb.mediator.interfaces.event
+package io.mb.mediator.interfaces
 
 /**
  * @author Mahdi Bohloul

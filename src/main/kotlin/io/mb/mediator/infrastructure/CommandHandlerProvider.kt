@@ -1,6 +1,6 @@
 package io.mb.mediator.infrastructure
 
-import io.mb.mediator.interfaces.command.CommandHandler
+import io.mb.mediator.interfaces.CommandHandler
 import org.springframework.context.ApplicationContext
 import kotlin.reflect.KClass
 

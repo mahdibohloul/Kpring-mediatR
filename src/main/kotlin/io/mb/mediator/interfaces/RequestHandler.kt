@@ -1,4 +1,4 @@
-package io.mb.mediator.interfaces.request
+package io.mb.mediator.interfaces
 
 /**
  * @author Mahdi Bohloul
@@ -13,5 +13,5 @@ interface RequestHandler<in TRequest : Request<TResponse>, TResponse> {
      * @param request request to handle
      * @return the response of the request
      */
-    fun handle(request: TRequest): TResponse
+    suspend fun handle(request: TRequest): TResponse
 }

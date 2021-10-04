@@ -17,13 +17,18 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-webflux:2.5.4") {
+    implementation("org.springframework.boot:spring-boot-starter-webflux:2.5.5") {
         exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
     }
-    implementation("org.springframework.boot:spring-boot-starter:2.5.4")
+    implementation("org.springframework.boot:spring-boot-starter:2.5.5")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    testImplementation("org.springframework.boot:spring-boot-starter-test:2.5.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2-native-mt")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2-native-mt")
+    implementation("junit:junit:4.13.2")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:2.5.5")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:1.5.31")
+    testImplementation("io.projectreactor:reactor-test:3.4.10")
 }
 
 tasks.withType<KotlinCompile> {
