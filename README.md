@@ -1,4 +1,4 @@
-# Kpring MediatR
+# Kpring MediatR [![GradleBuild](https://github.com/mahdibohloul/spring-reactive-mediatR/actions/workflows/build.yml/badge.svg)](https://github.com/mahdibohloul/spring-reactive-mediatR/actions/workflows/build.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 In this project, an attempt has been made to implement
 the [mediator pattern](https://en.wikipedia.org/wiki/Mediator_pattern#:~:text=In%20software%20engineering%2C%20the%20mediator,a%20set%20of%20objects%20interact.&text=Objects%20no%20longer%20communicate%20directly,communicating%20objects%2C%20thereby%20reducing%20coupling.)
@@ -64,4 +64,3 @@ class ProductService(
     }
 }
 ```
-
