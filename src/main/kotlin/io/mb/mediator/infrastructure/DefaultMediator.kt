@@ -1,19 +1,10 @@
 package io.mb.mediator.infrastructure
 
-import io.mb.mediator.interfaces.Factory
-import io.mb.mediator.interfaces.Mediator
-import io.mb.mediator.interfaces.MediatorThreadFactory
-import io.mb.mediator.interfaces.Command
-import io.mb.mediator.interfaces.CommandHandler
-import io.mb.mediator.interfaces.Event
-import io.mb.mediator.interfaces.EventHandler
-import io.mb.mediator.interfaces.Request
-import io.mb.mediator.interfaces.RequestHandler
+import io.mb.mediator.interfaces.*
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.supervisorScope
 import org.springframework.context.ApplicationContext
 import java.util.concurrent.Executor
-import java.util.concurrent.Executors
 
 
 /**
@@ -32,21 +23,6 @@ class DefaultMediator constructor(
     private val factory: Factory,
 ) : Mediator {
 
-    private var executor: Executor =
-        Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), MediatorThreadFactory())
-
-
-    /**
-     * Creates the Spring specific implementation of MediatR with a custom [Executor] for
-     * performing async operations.
-     *
-     * @param executor The executor to execute asynchronous operations
-     */
-    constructor(factory: Factory, executor: Executor) : this(factory) {
-        this.executor = executor
-    }
-
-
     override suspend fun <TRequest : Request<TResponse>, TResponse> sendAsync(request: TRequest): TResponse {
         val handler = factory.get(request::class.java)
         return handler.handle(request)
@@ -57,12 +33,14 @@ class DefaultMediator constructor(
         handler.handle(command)
     }
 
+
     override suspend fun publishAsync(event: Event) {
-        coroutineScope {
+        supervisorScope {
             val emmitHandlers = factory.get(event::class.java)
             emmitHandlers.forEach { handler ->
                 async { handler.handle(event) }
             }
         }
     }
+
 }

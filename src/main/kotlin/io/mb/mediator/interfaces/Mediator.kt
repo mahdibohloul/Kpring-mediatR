@@ -37,6 +37,7 @@ interface Mediator {
     /**
      * Publish an [Event] to all registered [EventHandler]s for the particular event.
      * The event will be sent asynchronously to all the events handlers.
+     * Note that the exception which throws in the events handlers will be ignored and doesn't propagate to the parent or cancel siblings
      *
      * @author Mahdi Bohloul
      * @param event the event to publishAsync
