@@ -1,4 +1,4 @@
-package io.mb.mediator.interfaces
+package io.kpring.mediator.core
 
 /**
  * Marker interface for a request

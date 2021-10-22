@@ -1,23 +1,21 @@
-package io.mb.mediator.infrastructure
+package io.kpring.mediator.infrastructure
 
-import io.mb.mediator.interfaces.*
-import io.mb.mediator.interfaces.Command
-import io.mb.mediator.interfaces.CommandHandler
-import io.mb.mediator.interfaces.Event
-import io.mb.mediator.interfaces.EventHandler
-import io.mb.mediator.interfaces.Request
-import io.mb.mediator.interfaces.RequestHandler
+import io.kpring.mediator.core.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationContext
 import org.springframework.core.GenericTypeResolver
 
+/**
+ * @author Mahdi Bohloul
+ */
 class DefaultFactory(
     private val applicationContext: ApplicationContext
 ) : Factory {
 
     private val registeredRequestHandlers: MutableMap<Class<out Request<*>>, RequestHandlerProvider<*>> = HashMap()
-    private val registeredEventHandlers: MutableMap<Class<out Event>, MutableSet<EventHandlerProvider<*>>> = HashMap()
+    private val registeredNotificationHandlers: MutableMap<Class<out Notification>, MutableSet<NotificationHandlerProvider<*>>> =
+        HashMap()
     private val registeredCommandHandler: MutableMap<Class<out Command>, CommandHandlerProvider<*>> = HashMap()
     private var initialized: Boolean = false
 
@@ -32,18 +30,18 @@ class DefaultFactory(
             ?: throw NoRequestHandlerException("No RequestHandler is registered to handle request of type ${requestClass.canonicalName}")
     }
 
-    override fun <TEvent : Event> get(eventClass: Class<out TEvent>): Set<EventHandler<TEvent>> {
+    override fun <TNotification : Notification> get(notificationClass: Class<out TNotification>): Set<NotificationHandler<TNotification>> {
         if (!initialized) {
             initializeHandlers()
         }
-        val handlers = mutableSetOf<EventHandler<TEvent>>()
-        registeredEventHandlers[eventClass]?.let {
+        val handlers = mutableSetOf<NotificationHandler<TNotification>>()
+        registeredNotificationHandlers[notificationClass]?.let {
             for (provider in it) {
-                val handler = provider.handler as EventHandler<TEvent>
+                val handler = provider.handler as NotificationHandler<TNotification>
                 handlers.add(handler)
             }
         }
-            ?: throw NoEventHandlersException("No EventHandlers are registered to handle event of type ${eventClass.canonicalName}")
+            ?: throw NoNotificationHandlersException("No NotificationHandlers are registered to receive notification of type ${notificationClass.canonicalName}")
         return handlers
     }
 
@@ -63,8 +61,8 @@ class DefaultFactory(
             if (!initialized) {
                 applicationContext.getBeanNamesForType(RequestHandler::class.java)
                     .forEach { registerRequestHandler(it) }
-                applicationContext.getBeanNamesForType(EventHandler::class.java)
-                    .forEach { registerEventHandler(it) }
+                applicationContext.getBeanNamesForType(NotificationHandler::class.java)
+                    .forEach { registerNotificationHandler(it) }
                 applicationContext.getBeanNamesForType(CommandHandler::class.java)
                     .forEach { registerCommandHandler(it) }
                 initialized = true
@@ -90,17 +88,19 @@ class DefaultFactory(
         }
     }
 
-    private fun registerEventHandler(eventHandlerName: String) {
-        logger.debug("Registering EventHandler with name $eventHandlerName")
-        val eventHandler: EventHandler<*> = applicationContext.getBean(eventHandlerName) as EventHandler<*>
-        val generics = GenericTypeResolver.resolveTypeArguments(eventHandler::class.java, EventHandler::class.java)
+    private fun registerNotificationHandler(notificationHandlerName: String) {
+        logger.debug("Registering NotificationHandler with name $notificationHandlerName")
+        val notificationHandler: NotificationHandler<*> =
+            applicationContext.getBean(notificationHandlerName) as NotificationHandler<*>
+        val generics =
+            GenericTypeResolver.resolveTypeArguments(notificationHandler::class.java, NotificationHandler::class.java)
         generics?.let {
-            val eventType = it[0] as Class<out Event>
-            val eventProvider = EventHandlerProvider(applicationContext, eventHandler::class)
-            registeredEventHandlers[eventType]?.add(eventProvider) ?: kotlin.run {
-                registeredEventHandlers[eventType] = mutableSetOf(eventProvider)
+            val notificationType = it[0] as Class<out Notification>
+            val eventProvider = NotificationHandlerProvider(applicationContext, notificationHandler::class)
+            registeredNotificationHandlers[notificationType]?.add(eventProvider) ?: kotlin.run {
+                registeredNotificationHandlers[notificationType] = mutableSetOf(eventProvider)
             }
-            logger.info("Registered EventHandler ${eventHandler::class.simpleName} to handle Event ${eventType.simpleName}")
+            logger.info("Registered NotificationHandler ${notificationHandler::class.simpleName} to receive Notification ${notificationType.simpleName}")
         }
     }
 
