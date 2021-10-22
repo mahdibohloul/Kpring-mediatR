@@ -1,1 +1,1 @@
-rootProject.name = "reactive-mediator-spring-boot-starter"
+rootProject.name = "kpring-mediatR-starter"

@@ -1,8 +1,8 @@
-package io.mb.mediator.builder
+package io.kpring.mediator.builder
 
-import io.mb.mediator.infrastructure.DefaultFactory
-import io.mb.mediator.infrastructure.DefaultMediator
-import io.mb.mediator.interfaces.Mediator
+import io.kpring.mediator.infrastructure.DefaultFactory
+import io.kpring.mediator.infrastructure.DefaultMediator
+import io.kpring.mediator.core.Mediator
 import org.springframework.context.ApplicationContext
 
 class MediatorBuilder(private val applicationContext: ApplicationContext) {

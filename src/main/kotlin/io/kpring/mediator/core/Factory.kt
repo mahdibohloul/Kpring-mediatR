@@ -1,7 +1,7 @@
-package io.mb.mediator.interfaces
+package io.kpring.mediator.core
 
 /**
- * A factory for handlers for messages that can be sent or published in Spring Reactive MediatR
+ * A factory for handlers for messages that can be sent or published in Kpring MediatR
  *
  * @author Mahdi Bohloul
  */
@@ -19,14 +19,14 @@ interface Factory {
             RequestHandler<TRequest, TResponse>
 
     /**
-     * Retrieves all the EventHandlers for the provided event type. If no EventHandlers are
-     * registered to handle the type provided [NoEventHandlersException] will be thrown.
+     * Retrieves all the NotificationHandlers for the provided notification type. If no NotificationHandlers are
+     * registered to handle the type provided [NoNotificationHandlersException] will be thrown.
      *
-     * @param eventClass The type of the event
-     * @return Set of [EventHandler]s for the eventClass
-     * @throws NoEventHandlersException When there are no EventHandlers available
+     * @param notificationClass The type of the event
+     * @return Set of [NotificationHandler]s for the notificationClass
+     * @throws NoNotificationHandlersException When there are no EventHandlers available
      */
-    fun <TEvent : Event> get(eventClass: Class<out TEvent>): Set<EventHandler<TEvent>>
+    fun <TNotification : Notification> get(notificationClass: Class<out TNotification>): Set<NotificationHandler<TNotification>>
 
     /**
      * Retrieves a CommandHandler for the provided type. If no CommandHandler
