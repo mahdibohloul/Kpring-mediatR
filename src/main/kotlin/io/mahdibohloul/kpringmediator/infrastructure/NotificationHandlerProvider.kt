@@ -1,6 +1,6 @@
-package io.kpring.mediator.infrastructure
+package io.mahdibohloul.kpringmediator.infrastructure
 
-import io.kpring.mediator.core.NotificationHandler
+import io.mahdibohloul.kpringmediator.core.NotificationHandler
 import org.springframework.context.ApplicationContext
 import kotlin.reflect.KClass
 

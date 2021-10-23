@@ -1,17 +1,17 @@
-package io.kpring.mediator.infrastructure
+package io.mahdibohloul.kpringmediator.infrastructure
 
-import io.kpring.mediator.core.RequestHandler
+import io.mahdibohloul.kpringmediator.core.CommandHandler
 import org.springframework.context.ApplicationContext
 import kotlin.reflect.KClass
 
 /**
- * A wrapper around [RequestHandler]
+ * A wrapper around [CommandHandler]
  *
  * @author Mahdi Bohloul
  * @property applicationContext ApplicationContext from Spring used to retrieve beans
  * @property type Type of CommandHandler
  */
-class RequestHandlerProvider<T : RequestHandler<*, *>>(
+internal class CommandHandlerProvider<T : CommandHandler<*>>(
     private val applicationContext: ApplicationContext,
     private val type: KClass<T>
 ) {

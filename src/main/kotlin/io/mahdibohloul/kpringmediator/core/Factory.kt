@@ -1,4 +1,4 @@
-package io.kpring.mediator.core
+package io.mahdibohloul.kpringmediator.core
 
 /**
  * A factory for handlers for messages that can be sent or published in Kpring MediatR
