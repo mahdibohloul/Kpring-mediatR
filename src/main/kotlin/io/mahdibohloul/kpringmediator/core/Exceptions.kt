@@ -1,4 +1,4 @@
-package io.kpring.mediator.core
+package io.mahdibohloul.kpringmediator.core
 
 /**
  * Basic exception type of the Kpring MediatR

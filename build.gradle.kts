@@ -1,15 +1,12 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "2.5.5"
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
     id("org.sonarqube") version "3.3"
     kotlin("jvm") version "1.5.31"
-    kotlin("plugin.spring") version "1.5.31"
 }
 
-group = "io.mb"
-version = "0.0.1-SNAPSHOT"
+group = "io.mahdibohloul.kpringmediator"
+version = "1.0.0"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
@@ -17,21 +14,16 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-webflux:2.5.5") {
-        exclude(group = "org.springframework.boot", module = "spring-boot-starter-logging")
-    }
-    implementation("org.springframework.boot:spring-boot-starter:2.5.5")
+    implementation(group = "org.springframework", name = "spring-context", version = "5.1.4.RELEASE")
+    implementation(group = "org.slf4j", name = "slf4j-api", version = "1.7.25")
+    implementation(group = "javax.validation", name = "validation-api", version = "2.0.1.Final")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.5.2-native-mt")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:1.5.2-native-mt")
-    implementation("org.aspectj:aspectjweaver:1.8.8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2-native-mt")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2-native-mt")
     implementation("junit:junit:4.13.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test:2.5.5")
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.5.31")
-    testImplementation("io.projectreactor:reactor-test:3.4.10")
+    testImplementation(group = "org.mockito", name = "mockito-core", version = "2.23.4")
 }
 
 tasks.withType<KotlinCompile> {
