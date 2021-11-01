@@ -1,7 +1,7 @@
-package io.mahdibohloul.kpringmediator.mock
+package io.github.mahdibohloul.kpringmediator.mock
 
-import io.mahdibohloul.kpringmediator.core.Command
-import io.mahdibohloul.kpringmediator.core.CommandHandler
+import io.github.mahdibohloul.kpringmediator.core.Command
+import io.github.mahdibohloul.kpringmediator.core.CommandHandler
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
