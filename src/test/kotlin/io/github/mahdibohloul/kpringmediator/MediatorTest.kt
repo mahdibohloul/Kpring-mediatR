@@ -1,8 +1,8 @@
-package io.mahdibohloul.kpringmediator
+package io.github.mahdibohloul.kpringmediator
 
-import io.mahdibohloul.kpringmediator.builder.MediatorBuilder
-import io.mahdibohloul.kpringmediator.core.Mediator
-import io.mahdibohloul.kpringmediator.mock.*
+import io.github.mahdibohloul.kpringmediator.builder.MediatorBuilder
+import io.github.mahdibohloul.kpringmediator.core.Mediator
+import io.github.mahdibohloul.kpringmediator.mock.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

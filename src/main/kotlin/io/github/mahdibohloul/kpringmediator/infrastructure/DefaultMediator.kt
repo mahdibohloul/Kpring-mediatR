@@ -1,6 +1,6 @@
-package io.mahdibohloul.kpringmediator.infrastructure
+package io.github.mahdibohloul.kpringmediator.infrastructure
 
-import io.mahdibohloul.kpringmediator.core.*
+import io.github.mahdibohloul.kpringmediator.core.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.supervisorScope
 import org.springframework.context.ApplicationContext
@@ -14,7 +14,7 @@ import org.springframework.context.ApplicationContext
  * @author Mahdi Bohloul
  */
 class DefaultMediator constructor(
-    private val factory: Factory,
+  private val factory: Factory,
 ) : Mediator {
 
     override suspend fun <TRequest : Request<TResponse>, TResponse> sendAsync(request: TRequest): TResponse {

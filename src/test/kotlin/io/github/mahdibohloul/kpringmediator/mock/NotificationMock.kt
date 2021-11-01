@@ -1,7 +1,7 @@
-package io.mahdibohloul.kpringmediator.mock
+package io.github.mahdibohloul.kpringmediator.mock
 
-import io.mahdibohloul.kpringmediator.core.Notification
-import io.mahdibohloul.kpringmediator.core.NotificationHandler
+import io.github.mahdibohloul.kpringmediator.core.Notification
+import io.github.mahdibohloul.kpringmediator.core.NotificationHandler
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 

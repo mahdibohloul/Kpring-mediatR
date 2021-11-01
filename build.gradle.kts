@@ -5,7 +5,7 @@ plugins {
     kotlin("jvm") version "1.5.31"
 }
 
-group = "io.mahdibohloul.kpringmediator"
+group = "io.github.mahdibohloul"
 version = "1.0.0"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
