@@ -1,6 +1,6 @@
-package io.github.mahdibohloul.kpringmediator.infrastructure
+package io.mahdibohloul.kpringmediator.infrastructure
 
-import io.github.mahdibohloul.kpringmediator.core.*
+import io.mahdibohloul.kpringmediator.core.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.supervisorScope
 import org.springframework.context.ApplicationContext

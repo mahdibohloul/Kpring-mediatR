@@ -3,13 +3,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
   id("org.sonarqube") version "3.3"
   kotlin("jvm") version "1.5.31"
-  id("maven-publish")
-  id("signing")
+  `maven-publish`
+  signing
   id("org.jetbrains.dokka") version "0.10.1"
 }
 
-group = "io.github.mahdibohloul"
-version = "v1.0.0"
+group = "io.mahdibohloul.kpringmediatr"
+version = "1.0.0"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
@@ -59,10 +59,10 @@ publishing {
   repositories {
     maven {
       name = "GitHubPackages"
-      url = uri("https://github.com/mahdibohloul/Kpring-mediatR")
+      url = uri("https://maven.pkg.github.com/mahdibohloul/Kpring-mediatR")
       credentials {
-        username = System.getenv("GITHUB_USERNAME")
-        password = System.getenv("GITHUB_PASSWORD")
+        username = project.property("githubUsername").toString()
+        password = project.property("githubPassword").toString()
       }
     }
   }
@@ -77,7 +77,7 @@ publishing {
         name.set(artifactId)
         url.set("https://github.com/mahdibohloul/Kpring-mediatR")
         licenses {
-          license{
+          license {
             name.set("MIT License")
             url.set("https://opensource.org/licenses/MIT")
             distribution.set("repo")

@@ -1,6 +1,6 @@
-package io.github.mahdibohloul.kpringmediator.infrastructure
+package io.mahdibohloul.kpringmediator.infrastructure
 
-import io.github.mahdibohloul.kpringmediator.core.RequestHandler
+import io.mahdibohloul.kpringmediator.core.RequestHandler
 import org.springframework.context.ApplicationContext
 import kotlin.reflect.KClass
 

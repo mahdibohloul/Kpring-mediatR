@@ -1,7 +1,7 @@
-package io.github.mahdibohloul.kpringmediator.mock
+package io.mahdibohloul.kpringmediator.mock
 
-import io.github.mahdibohloul.kpringmediator.core.Request
-import io.github.mahdibohloul.kpringmediator.core.RequestHandler
+import io.mahdibohloul.kpringmediator.core.Request
+import io.mahdibohloul.kpringmediator.core.RequestHandler
 import org.springframework.stereotype.Component
 
 class HelloMockRequest : Request<String>

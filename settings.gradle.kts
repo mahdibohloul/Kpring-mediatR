@@ -1,1 +1,1 @@
-rootProject.name = "kpring-mediatR-starter"
+rootProject.name = "kpring-mediatr-starter"

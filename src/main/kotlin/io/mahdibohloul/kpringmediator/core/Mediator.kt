@@ -1,4 +1,4 @@
-package io.github.mahdibohloul.kpringmediator.core
+package io.mahdibohloul.kpringmediator.core
 
 /**
  * Defines a mediator to encapsulate sending and publishing mediator patterns.

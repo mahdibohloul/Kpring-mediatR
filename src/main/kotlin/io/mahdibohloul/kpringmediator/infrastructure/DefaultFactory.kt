@@ -1,6 +1,6 @@
-package io.github.mahdibohloul.kpringmediator.infrastructure
+package io.mahdibohloul.kpringmediator.infrastructure
 
-import io.github.mahdibohloul.kpringmediator.core.*
+import io.mahdibohloul.kpringmediator.core.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationContext
