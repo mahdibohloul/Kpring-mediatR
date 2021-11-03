@@ -1,4 +1,4 @@
-package io.github.mahdibohloul.kpringmediator.core
+package io.mahdibohloul.kpringmediator.core
 
 /**
  * Marker interface for a request
