@@ -67,7 +67,8 @@ Like [Request](#Request:), you send a command to anyone who can handle the comma
 
 #### Notification:
 
-You publish a notification and the relevant handlers receive the notification and do something about it. It is useful when something special is happening in your system and you want to do separate tasks in parallel afterwards. For example, when a shipment is cancelled, you may want to send an email to the order owner and the driver and vendor of the shipment that is not related to your main process, to do this you can publish a notification.
+You publish a notification and the relevant handlers receive the notification and do something about it. It is useful when something special is happening in your system, and you want to do separate tasks in parallel afterwards. For example, when a shipment is cancelled, you may want to send an email to the order owner and the driver and vendor of the shipment that is not related to your main process, to do this you can publish a notification.
+Also, you can specify a coroutine dispatcher to run the notification handler on. it will become handy when you have many notification handlers, and you want to run some of them on another thread.
 
 ## Usage
 
@@ -114,15 +115,23 @@ class OrderCancelledNotification : Notification
 ```kotlin
 @Component
 class OrderCancelledNotificationHandler : NotificationHandler<OrderCancelledNotification> {
-    override suspend fun handle(event: OrderCancelledNotification) {
+    override suspend fun handle(notification: OrderCancelledNotification) {
         //Do something
+    }
+    
+    override fun getCoroutineDispatcher(): CoroutineDispatcher {
+        //Specify dispatcher here
     }
 }
 
 @Component
 class SendEmailToVendorWhenOrderCancelledNotificationHandler : NotificationHandler<OrderCancelledNotification> {
-    override suspend fun handle(event: OrderCancelledNotification) {
+    override suspend fun handle(notification: OrderCancelledNotification) {
         //Send email to vendor
+    }
+    
+    override fun getCoroutineDispatcher(): CoroutineDispatcher {
+        return Dispatchers.IO
     }
 }
 ```
