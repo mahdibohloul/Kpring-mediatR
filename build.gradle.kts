@@ -8,8 +8,8 @@ plugins {
   id("org.jetbrains.dokka") version "0.10.1"
 }
 
-group = "io.mahdibohloul.kpringmediatr"
-version = "1.0.0"
+group = "io.github.mahdibohloul"
+version = "1.0.1"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
@@ -59,10 +59,10 @@ publishing {
   repositories {
     maven {
       name = "GitHubPackages"
-      url = uri("https://maven.pkg.github.com/mahdibohloul/Kpring-mediatR")
+      url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
       credentials {
-        username = project.property("githubUsername").toString()
-        password = project.property("githubPassword").toString()
+        username = project.property("ossrhUsername").toString()
+        password = project.property("ossrhPassword").toString()
       }
     }
   }
