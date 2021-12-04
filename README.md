@@ -17,19 +17,19 @@ help developers be more focused on their code and write cleaner and decoupled co
 
 ## Setup and Configuration
 
-> #### To get the Kpring-MediatR, you can use both [GitHub](https://github.com/mahdibohloul/Kpring-mediatR/packages/1076811) and [Maven Central Repositories](https://search.maven.org/artifact/io.github.mahdibohloul/kpring-mediatR-starter). To use Maven Central, do the following:
+> #### To get the Kpring-MediatR, you can use [Maven Central Repositories](https://search.maven.org/artifact/io.github.mahdibohloul/kpring-mediatR-starter). To use Maven Central, do the following:
 
 ##### Maven
 ```maven
 <dependency>
   <groupId>io.github.mahdibohloul</groupId>
   <artifactId>kpring-mediatR-starter</artifactId>
-  <version>v1.0.0</version>
+  <version>1.0.1</version>
 </dependency>
 ```
 ##### Gradle
 ```gradle
-implementation("io.github.mahdibohloul:kpring-mediatR-starter:v1.0.0")
+implementation("io.github.mahdibohloul:kpring-mediatR-starter:1.0.1")
 ```
 
 To set up and config Kpring mediator in your project add the bean to your project as follows:
