@@ -2,6 +2,8 @@ package io.mahdibohloul.kpringmediator.mock
 
 import io.mahdibohloul.kpringmediator.core.Notification
 import io.mahdibohloul.kpringmediator.core.NotificationHandler
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
@@ -14,8 +16,12 @@ class FirstNotificationMockHandler : NotificationHandler<NotificationMock> {
         private val logger = LoggerFactory.getLogger(FirstNotificationMockHandler::class.java)
     }
 
-    override suspend fun handle(event: NotificationMock) {
+    override suspend fun handle(notification: NotificationMock) {
         logger.info("First handler executed asynchronously in ${this::class.simpleName}")
+    }
+
+    override fun getCoroutineDispatcher(): CoroutineDispatcher {
+        return Dispatchers.IO
     }
 }
 
@@ -25,7 +31,7 @@ class SecondNotificationMockHandler : NotificationHandler<NotificationMock> {
         private val logger = LoggerFactory.getLogger(SecondNotificationMockHandler::class.java)
     }
 
-    override suspend fun handle(event: NotificationMock) {
+    override suspend fun handle(notification: NotificationMock) {
         logger.info("Second handler executed asynchronously in ${this::class.simpleName}")
     }
 }
@@ -37,7 +43,7 @@ class ThirdNotificationMockHandler : NotificationHandler<NotificationMock> {
         private val logger = LoggerFactory.getLogger(ThirdNotificationMockHandler::class.java)
     }
 
-    override suspend fun handle(event: NotificationMock) {
+    override suspend fun handle(notification: NotificationMock) {
         logger.error("Exception thrown and expected to won't be propagated to the parent")
         throw Exception()
     }
@@ -50,7 +56,7 @@ class FourthNotificationMockHandler : NotificationHandler<NotificationMock> {
         private val logger = LoggerFactory.getLogger(FourthNotificationMockHandler::class.java)
     }
 
-    override suspend fun handle(event: NotificationMock) {
+    override suspend fun handle(notification: NotificationMock) {
         logger.info("Fourth handler executed asynchronously in ${this::class.simpleName}")
     }
 }
