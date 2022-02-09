@@ -1,17 +1,17 @@
 package io.mahdibohloul.kpringmediator.infrastructure
 
-import io.mahdibohloul.kpringmediator.core.NotificationHandler
-import org.springframework.context.ApplicationContext
+import io.mahdibohloul.kpringmediator.core.NotificationExceptionHandler
 import kotlin.reflect.KClass
+import org.springframework.context.ApplicationContext
 
 /**
- * A wrapper around [NotificationHandler]
+ * A wrapper around [NotificationExceptionHandler]
  *
  * @author Mahdi Bohloul
  * @property applicationContext ApplicationContext from Spring used to retrieve beans
- * @property type Type of NotificationHandler
+ * @property type Type of NotificationExceptionHandler
  */
-internal class NotificationHandlerProvider<T : NotificationHandler<*>>(
+class NotificationExceptionHandlerProvider<T : NotificationExceptionHandler<*, *>>(
     private val applicationContext: ApplicationContext,
     private val type: KClass<T>
 ) {

@@ -22,9 +22,9 @@ dependencies {
   implementation(group = "javax.validation", name = "validation-api", version = "2.0.1.Final")
   implementation("org.jetbrains.kotlin:kotlin-reflect")
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2-native-mt")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-native-mt")
   implementation("junit:junit:4.13.2")
-  testImplementation("org.springframework.boot:spring-boot-starter-test:2.5.5")
+  testImplementation("org.springframework.boot:spring-boot-starter-test:2.6.1")
   testImplementation("org.jetbrains.kotlin:kotlin-test:1.5.31")
   testImplementation(group = "org.mockito", name = "mockito-core", version = "2.23.4")
 }

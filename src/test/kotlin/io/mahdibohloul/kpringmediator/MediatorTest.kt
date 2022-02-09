@@ -15,7 +15,7 @@ import kotlin.test.assertEquals
 @SpringBootTest(
     classes = [ApplicationContext::class, HelloMockRequestHandler::class, LoggerMockCommandHandler::class,
         FirstNotificationMockHandler::class, SecondNotificationMockHandler::class, ThirdNotificationMockHandler::class,
-        FourthNotificationMockHandler::class]
+        FourthNotificationMockHandler::class, MockNotificationExceptionHandler::class]
 )
 class MediatorTest {
     @Autowired
