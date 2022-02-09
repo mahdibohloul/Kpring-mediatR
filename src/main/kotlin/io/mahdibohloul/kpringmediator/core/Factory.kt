@@ -1,5 +1,7 @@
 package io.mahdibohloul.kpringmediator.core
 
+import kotlin.reflect.KClass
+
 /**
  * A factory for handlers for messages that can be sent or published in Kpring MediatR
  *
@@ -15,8 +17,8 @@ interface Factory {
      * @return The [RequestHandler] for the request
      * @throws NoRequestHandlerException When there is not a RequestHandler available for the request
      */
-    fun <TRequest : Request<TResponse>, TResponse> get(requestClass: Class<out TRequest>):
-            RequestHandler<TRequest, TResponse>
+    fun <TRequest : Request<TResponse>, TResponse> getRequestHandler(requestClass: KClass<out TRequest>):
+        RequestHandler<TRequest, TResponse>
 
     /**
      * Retrieves all the NotificationHandlers for the provided notification type. If no NotificationHandlers are
@@ -26,7 +28,7 @@ interface Factory {
      * @return Set of [NotificationHandler]s for the notificationClass
      * @throws NoNotificationHandlersException When there are no EventHandlers available
      */
-    fun <TNotification : Notification> get(notificationClass: Class<out TNotification>): Set<NotificationHandler<TNotification>>
+    fun <TNotification : Notification> getNotificationHandlers(notificationClass: KClass<out TNotification>): Set<NotificationHandler<TNotification>>
 
     /**
      * Retrieves a CommandHandler for the provided type. If no CommandHandler
@@ -36,5 +38,19 @@ interface Factory {
      * @return The [CommandHandler] for the command
      * @throws NoCommandHandlerException When there isn't a CommandHandler available
      */
-    fun <TCommand : Command> get(commandClass: Class<out TCommand>): CommandHandler<TCommand>
+    fun <TCommand : Command> getCommandHandler(commandClass: KClass<out TCommand>): CommandHandler<TCommand>
+
+    /**
+     * Retrieves all the NotificationExceptionHandlers for the provided notification and exception type. If no NotificationExceptionHandlers are
+     * registered to handle the notification and exception type provided an empty set will be returned.
+     *
+     * @author Mahdi Bohloul
+     * @param notificationClass The type of the event
+     * @param exceptionClass The type of the exception
+     * @return Set of [NotificationExceptionHandler]s for the notificationClass and exceptionClass
+     */
+    fun <TNotification : Notification, TException : Exception> getNotificationExceptionHandlers(
+        notificationClass: KClass<out TNotification>, exceptionClass: KClass<out TException>
+    ):
+        Set<NotificationExceptionHandler<TNotification, TException>>
 }

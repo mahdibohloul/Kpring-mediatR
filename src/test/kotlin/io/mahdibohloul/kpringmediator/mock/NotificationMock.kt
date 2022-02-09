@@ -1,6 +1,7 @@
 package io.mahdibohloul.kpringmediator.mock
 
 import io.mahdibohloul.kpringmediator.core.Notification
+import io.mahdibohloul.kpringmediator.core.NotificationExceptionHandler
 import io.mahdibohloul.kpringmediator.core.NotificationHandler
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -8,7 +9,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 class NotificationMock : Notification
-
 
 @Component
 class FirstNotificationMockHandler : NotificationHandler<NotificationMock> {
@@ -36,7 +36,6 @@ class SecondNotificationMockHandler : NotificationHandler<NotificationMock> {
     }
 }
 
-
 @Component
 class ThirdNotificationMockHandler : NotificationHandler<NotificationMock> {
     companion object {
@@ -49,7 +48,6 @@ class ThirdNotificationMockHandler : NotificationHandler<NotificationMock> {
     }
 }
 
-
 @Component
 class FourthNotificationMockHandler : NotificationHandler<NotificationMock> {
     companion object {
@@ -60,6 +58,18 @@ class FourthNotificationMockHandler : NotificationHandler<NotificationMock> {
         logger.info("Fourth handler executed asynchronously in ${this::class.simpleName}")
     }
 }
+
+@Component
+class MockNotificationExceptionHandler : NotificationExceptionHandler<NotificationMock, Exception> {
+    override suspend fun handle(notification: NotificationMock, exception: Exception) {
+        logger.error("An exception throw: $exception during handling $notification notification")
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(MockNotificationExceptionHandler::class.java)
+    }
+}
+
 
 
 

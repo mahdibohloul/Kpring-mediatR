@@ -54,7 +54,7 @@ class MediatorConfiguration(
 
 ## Features
 
-**Kpring Mediator** offers three types of features:
+**Kpring Mediator** offers four types of features:
 
 #### Request:
 
@@ -69,6 +69,18 @@ Like [Request](#Request:), you send a command to anyone who can handle the comma
 
 You publish a notification and the relevant handlers receive the notification and do something about it. It is useful when something special is happening in your system, and you want to do separate tasks in parallel afterwards. For example, when a shipment is cancelled, you may want to send an email to the order owner and the driver and vendor of the shipment that is not related to your main process, to do this you can publish a notification.
 Also, you can specify a coroutine dispatcher to run the notification handler on. it will become handy when you have many notification handlers, and you want to run some of them on another thread.
+
+#### Notification Exception Handler:
+
+Catch thrown exceptions in your notification handlers and handle them in a special way. For example, you may want to log the exception and email to the system administrator.
+You can also specify a coroutine dispatcher to run the notification exception handler on.
+To enable this feature, you need to add the following method to your factory configuration:
+```kotlin
+@Bean
+fun factory(): Factory {
+    return DefaultFactory(applicationContext).enableNotificationExceptionHandling()
+}
+```
 
 ## Usage
 
@@ -136,6 +148,20 @@ class SendEmailToVendorWhenOrderCancelledNotificationHandler : NotificationHandl
 }
 ```
 
+#### Notification Exception Handler usage
+```kotlin
+@Component
+class OrderCancellationSendingEmailExceptionHandler: NotificationExceptionHandler<OrderCancellationNotification, EmailServiceException> {
+    override suspend fun handle(notification: OrderCancellationNotification, exception: EmailServiceException) {
+        //Handle exception
+    }
+    
+    override fun getCoroutineDispatcher(): CoroutineDispatcher {
+        return Dispatchers.IO
+    }
+}
+```
+
 ### Use in reactive style
 
 Add the [Kotlinx coroutines reactor](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-reactor/index.html) to your project.
@@ -160,9 +186,8 @@ class ProductService(
 
 There are 5 different exceptions: **NoRequestHandlerException**, **DuplicateRequestHandlerRegistrationException**, **NoNotificationHandlersException**, **NoCommandHandlerException**, **DuplicateCommandHandlerRegistrationException**, all of each are inherited from **KpringMediatorException**.
 
-Exceptions that occur in *request handler*s and *command handler*s were propagated in the parent and canceled the process, but if an exception occurs in one of the *notification handler*s, it is ignored and the other *notification handler*s continue to operate.
+Exceptions that occur in *request handler*s and *command handler*s were propagated in the parent and canceled the process, but if an exception occurs in one of the *notification handler*s, it is ignored if there is no *notification exception handler*s found and the other *notification handler*s continue to operate.
 
-> I am currently working on a system for logging exceptions that occur in specific notification handlers, and I hope to improve this in later versions.
-
+## Contribution
 ***If you can improve this project, do not hesitate to contribute with me. I'm waiting for your merge requests with open arms.***
 
