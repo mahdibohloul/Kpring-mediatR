@@ -24,7 +24,7 @@ help developers be more focused on their code and write cleaner and decoupled co
 <dependency>
   <groupId>io.github.mahdibohloul</groupId>
   <artifactId>kpring-mediatR-starter</artifactId>
-  <version>1.0.1</version>
+  <version>1.1.0</version>
 </dependency>
 ```
 ##### Gradle
