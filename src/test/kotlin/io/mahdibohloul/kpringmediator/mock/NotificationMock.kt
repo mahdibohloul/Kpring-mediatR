@@ -12,64 +12,58 @@ class NotificationMock : Notification
 
 @Component
 class FirstNotificationMockHandler : NotificationHandler<NotificationMock> {
-    companion object {
-        private val logger = LoggerFactory.getLogger(FirstNotificationMockHandler::class.java)
-    }
+  companion object {
+    private val logger = LoggerFactory.getLogger(FirstNotificationMockHandler::class.java)
+  }
 
-    override suspend fun handle(notification: NotificationMock) {
-        logger.info("First handler executed asynchronously in ${this::class.simpleName}")
-    }
+  override suspend fun handle(notification: NotificationMock) {
+    logger.info("First handler executed asynchronously in ${this::class.simpleName}")
+  }
 
-    override fun getCoroutineDispatcher(): CoroutineDispatcher {
-        return Dispatchers.IO
-    }
+  override fun getCoroutineDispatcher(): CoroutineDispatcher = Dispatchers.IO
 }
 
 @Component
 class SecondNotificationMockHandler : NotificationHandler<NotificationMock> {
-    companion object {
-        private val logger = LoggerFactory.getLogger(SecondNotificationMockHandler::class.java)
-    }
+  companion object {
+    private val logger = LoggerFactory.getLogger(SecondNotificationMockHandler::class.java)
+  }
 
-    override suspend fun handle(notification: NotificationMock) {
-        logger.info("Second handler executed asynchronously in ${this::class.simpleName}")
-    }
+  override suspend fun handle(notification: NotificationMock) {
+    logger.info("Second handler executed asynchronously in ${this::class.simpleName}")
+  }
 }
 
 @Component
 class ThirdNotificationMockHandler : NotificationHandler<NotificationMock> {
-    companion object {
-        private val logger = LoggerFactory.getLogger(ThirdNotificationMockHandler::class.java)
-    }
+  companion object {
+    private val logger = LoggerFactory.getLogger(ThirdNotificationMockHandler::class.java)
+  }
 
-    override suspend fun handle(notification: NotificationMock) {
-        logger.error("Exception thrown and expected to won't be propagated to the parent")
-        throw Exception()
-    }
+  override suspend fun handle(notification: NotificationMock) {
+    logger.error("Exception thrown and expected to won't be propagated to the parent")
+    error("Exception from ${this::class.simpleName}")
+  }
 }
 
 @Component
 class FourthNotificationMockHandler : NotificationHandler<NotificationMock> {
-    companion object {
-        private val logger = LoggerFactory.getLogger(FourthNotificationMockHandler::class.java)
-    }
+  companion object {
+    private val logger = LoggerFactory.getLogger(FourthNotificationMockHandler::class.java)
+  }
 
-    override suspend fun handle(notification: NotificationMock) {
-        logger.info("Fourth handler executed asynchronously in ${this::class.simpleName}")
-    }
+  override suspend fun handle(notification: NotificationMock) {
+    logger.info("Fourth handler executed asynchronously in ${this::class.simpleName}")
+  }
 }
 
 @Component
 class MockNotificationExceptionHandler : NotificationExceptionHandler<NotificationMock, Exception> {
-    override suspend fun handle(notification: NotificationMock, exception: Exception) {
-        logger.error("An exception throw: $exception during handling $notification notification")
-    }
+  override suspend fun handle(notification: NotificationMock, exception: Exception) {
+    logger.error("An exception throw: $exception during handling $notification notification")
+  }
 
-    companion object {
-        private val logger = LoggerFactory.getLogger(MockNotificationExceptionHandler::class.java)
-    }
+  companion object {
+    private val logger = LoggerFactory.getLogger(MockNotificationExceptionHandler::class.java)
+  }
 }
-
-
-
-

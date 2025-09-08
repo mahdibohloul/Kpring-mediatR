@@ -8,14 +8,12 @@ package io.mahdibohloul.kpringmediator.core
  */
 open class KpringMediatorException(message: String?) : RuntimeException(message)
 
-
 /**
  * Exception thrown when there is not a [RequestHandler] available for a [Request]
  *
  * @author Mahdi Bohloul
  */
 class NoRequestHandlerException(message: String?) : KpringMediatorException(message)
-
 
 /**
  * Exception thrown when there is an attempt to register a [RequestHandler] for a
@@ -25,14 +23,12 @@ class NoRequestHandlerException(message: String?) : KpringMediatorException(mess
  */
 class DuplicateRequestHandlerRegistrationException(message: String?) : KpringMediatorException(message)
 
-
 /**
  * Exception thrown when there are no [NotificationHandler]s available for an [Notification]
  *
  * @author Mahdi Bohloul
  */
 class NoNotificationHandlersException(message: String?) : KpringMediatorException(message)
-
 
 /**
  * Exception thrown when there is not a [CommandHandler] available for a [Command]

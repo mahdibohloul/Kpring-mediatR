@@ -12,10 +12,10 @@ import kotlin.reflect.KClass
  * @property type Type of CommandHandler
  */
 internal class CommandHandlerProvider<T : CommandHandler<*>>(
-    private val applicationContext: ApplicationContext,
-    private val type: KClass<T>
+  private val applicationContext: ApplicationContext,
+  private val type: KClass<T>,
 ) {
-    internal val handler: T by lazy {
-        applicationContext.getBean(type.java)
-    }
+  internal val handler: T by lazy {
+    applicationContext.getBean(type.java)
+  }
 }

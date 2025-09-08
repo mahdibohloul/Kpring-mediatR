@@ -6,9 +6,9 @@ package io.mahdibohloul.kpringmediator.core
  */
 interface CommandHandler<in TCommand : Command> {
 
-    /**
-     * @author Mahdi Bohloul
-     * @param command type of the given command
-     */
-    suspend fun handle(command: TCommand)
+  /**
+   * @author Mahdi Bohloul
+   * @param command type of the given command
+   */
+  suspend fun handle(command: TCommand)
 }

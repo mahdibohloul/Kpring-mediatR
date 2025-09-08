@@ -10,11 +10,11 @@ class LoggerMockCommand : Command
 @Component
 class LoggerMockCommandHandler : CommandHandler<LoggerMockCommand> {
 
-    companion object {
-        private val logger = LoggerFactory.getLogger(LoggerMockCommandHandler::class.java)
-    }
+  companion object {
+    private val logger = LoggerFactory.getLogger(LoggerMockCommandHandler::class.java)
+  }
 
-    override suspend fun handle(command: LoggerMockCommand) {
-        logger.info("Command executed asynchronously in ${this::class.simpleName}")
-    }
+  override suspend fun handle(command: LoggerMockCommand) {
+    logger.info("Command executed asynchronously in ${this::class.simpleName}")
+  }
 }

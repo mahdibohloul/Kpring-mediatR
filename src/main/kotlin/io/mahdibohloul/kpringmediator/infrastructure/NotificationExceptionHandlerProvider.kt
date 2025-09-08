@@ -1,8 +1,8 @@
 package io.mahdibohloul.kpringmediator.infrastructure
 
 import io.mahdibohloul.kpringmediator.core.NotificationExceptionHandler
-import kotlin.reflect.KClass
 import org.springframework.context.ApplicationContext
+import kotlin.reflect.KClass
 
 /**
  * A wrapper around [NotificationExceptionHandler]
@@ -12,10 +12,10 @@ import org.springframework.context.ApplicationContext
  * @property type Type of NotificationExceptionHandler
  */
 class NotificationExceptionHandlerProvider<T : NotificationExceptionHandler<*, *>>(
-    private val applicationContext: ApplicationContext,
-    private val type: KClass<T>
+  private val applicationContext: ApplicationContext,
+  private val type: KClass<T>,
 ) {
-    internal val handler: T by lazy {
-        applicationContext.getBean(type.java)
-    }
+  internal val handler: T by lazy {
+    applicationContext.getBean(type.java)
+  }
 }

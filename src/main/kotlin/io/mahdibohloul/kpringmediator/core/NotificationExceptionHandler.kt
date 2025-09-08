@@ -10,11 +10,10 @@ import kotlinx.coroutines.Dispatchers
  * @param TNotification the type of the notification that will be handled
  */
 interface NotificationExceptionHandler<
-    in TNotification : Notification,
-    in TException : Exception> {
-    suspend fun handle(notification: TNotification, exception: TException)
+  in TNotification : Notification,
+  in TException : Exception,
+  > {
+  suspend fun handle(notification: TNotification, exception: TException)
 
-    fun getCoroutineDispatcher(): CoroutineDispatcher {
-        return Dispatchers.Default
-    }
+  fun getCoroutineDispatcher(): CoroutineDispatcher = Dispatchers.Default
 }
