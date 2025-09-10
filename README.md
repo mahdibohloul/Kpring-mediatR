@@ -38,14 +38,14 @@ Kpring MediatR is heavily inspired by the [MediatR](https://github.com/jbogard/M
 <dependency>
     <groupId>io.github.mahdibohloul</groupId>
     <artifactId>kpring-mediatr-starter</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
 </dependency>
 ```
 
 ### Gradle
 
 ```kotlin
-implementation("io.github.mahdibohloul:kpring-mediatr-starter:2.0.0")
+implementation("io.github.mahdibohloul:kpring-mediatr-starter:2.0.1")
 ```
 
 ## ⚙️ Configuration

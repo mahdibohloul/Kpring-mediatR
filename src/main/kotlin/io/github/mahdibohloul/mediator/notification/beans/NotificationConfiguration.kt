@@ -53,8 +53,6 @@ class NotificationConfiguration {
       val children = parent.children.toList()
       logger.info("Shutting down {}: {} child(ren)", coroutineContext[CoroutineName]?.name, children.size)
 
-      parent.cancel(CancellationException("Application shutdown"))
-
       runBlocking {
         val waited = withTimeoutOrNull(timeoutPerChild.toKotlinDuration()) {
           children.joinAll()
@@ -67,7 +65,13 @@ class NotificationConfiguration {
             timeoutPerChild.seconds,
             bestEffortAfterCancel.seconds,
           )
-          withTimeoutOrNull(bestEffortAfterCancel.toKotlinDuration()) { children.joinAll() }
+          val bestEffortAnswered = withTimeoutOrNull(bestEffortAfterCancel.toKotlinDuration()) {
+            children.joinAll()
+            return@withTimeoutOrNull true
+          }
+          if (bestEffortAnswered != true) {
+            parent.cancel(CancellationException("Best-effort shutdown timeout"))
+          }
         }
       }
 
