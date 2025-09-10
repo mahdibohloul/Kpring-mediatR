@@ -6,8 +6,8 @@
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.5-brightgreen.svg)](https://spring.io/projects/spring-boot)
 
 A powerful implementation of the [Mediator Pattern](https://en.wikipedia.org/wiki/Mediator_pattern) for the JVM, built
-with Kotlin and native coroutine support for the Spring Framework. Kpring MediatR is heavily inspired by
-the [MediatR](https://github.com/jbogard/MediatR) project for .NET by Jimmy Bogard.
+with Kotlin and native coroutine support for the Spring Framework.
+Kpring MediatR is heavily inspired by the [MediatR](https://github.com/jbogard/MediatR) project for .NET by Jimmy Bogard.
 
 ## 🚀 Features
 

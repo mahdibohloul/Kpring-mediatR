@@ -77,38 +77,80 @@ detekt {
   baseline = file("$projectDir/detekt-baseline.xml")
 }
 
-//tasks.register("verifyReadmeContent") {
-//  doLast {
-//    val readmeFile = file("README.md")
-//    val content = readmeFile.readText()
-//
-//    // List of checks
-//    val checks = listOf(
-//      Check("group ID", """<groupId>${project.group}</groupId>"""),
-//      Check("version", """<version>${project.version}</version>"""),
-//      Check("Spring Boot version", "spring-boot-starter-actuator"),
-//    )
-//
-//    val errors = checks.mapNotNull { check ->
-//      if (!content.contains(check.expectedValue)) {
-//        "Missing or incorrect ${check.name}: ${check.expectedValue}"
-//      } else null
-//    }
-//
-//    if (errors.isNotEmpty()) {
-//      throw GradleException(
-//        """
-//                README content verification failed!
-//                ${errors.joinToString("\n")}
-//                Please update the README.md with correct values
-//            """.trimIndent()
-//      )
-//    }
-//  }
-//}
-//
-//tasks.check {
-//  dependsOn("verifyReadmeContent")
-//}
+mavenPublishing {
+  publishToMavenCentral()
+  signAllPublications()
+
+  pom {
+    name.set("kpring-mediatr-starter")
+    description.set(
+      "A powerful implementation of the Mediator Pattern for the JVM, " +
+        "built with Kotlin and native coroutine support for the Spring Framework."
+    )
+    url.set("https://github.com/mahdibohloul/Kpring-mediatR")
+    licenses {
+      license {
+        name.set("MIT License")
+        url.set("https://opensource.org/licenses/MIT")
+        distribution.set("repo")
+      }
+    }
+    developers {
+      developer {
+        id.set("mahdibohloul")
+        name.set("Mahdi Bohloul")
+        email.set("mahdiibohloul@gmail.com")
+        url.set("https://github.com/mahdibohloul/")
+      }
+    }
+    scm {
+      url.set("https://github.com/mahdibohloul/Kpring-mediatR")
+    }
+  }
+}
+
+tasks.register("verifyReadmeContent") {
+  group = "verification"
+  description = "Verifies that README.md contains correct version information"
+
+  doLast {
+    val readmeFile = file("README.md")
+    val content = readmeFile.readText()
+
+    println("🔍 Verifying version consistency in README...")
+
+    // Version consistency checks
+    val versionChecks = listOf(
+      Check("Maven version", """<version>${project.version}</version>"""),
+      Check("Gradle version", """implementation("${project.group}:kpring-mediatr-starter:${project.version}")"""),
+    )
+
+    val errors = versionChecks.mapNotNull { check ->
+      if (!content.contains(check.expectedValue)) {
+        "❌ Missing or incorrect ${check.name}: ${check.expectedValue}"
+      } else null
+    }
+
+    if (errors.isNotEmpty()) {
+      println("\n❌ Version verification failed!")
+      errors.forEach { error -> println(error) }
+      throw GradleException(
+        """
+        Version verification failed!
+        
+        ${errors.joinToString("\n")}
+        
+        Please update the README.md with correct version ${project.version} and run the task again.
+        """.trimIndent()
+      )
+    } else {
+      println("✅ Version consistency verified: ${project.version}")
+    }
+  }
+}
+
+tasks.check {
+  dependsOn("verifyReadmeContent")
+}
 
 data class Check(val name: String, val expectedValue: String)
