@@ -10,6 +10,7 @@ import io.github.mahdibohloul.mediator.command.CommandHandler
 import io.github.mahdibohloul.mediator.notification.Notification
 import io.github.mahdibohloul.mediator.notification.NotificationExceptionHandler
 import io.github.mahdibohloul.mediator.notification.NotificationHandler
+import io.github.mahdibohloul.mediator.notification.NotificationProperties
 import io.github.mahdibohloul.mediator.providers.CommandHandlerProvider
 import io.github.mahdibohloul.mediator.providers.NotificationExceptionHandlerProvider
 import io.github.mahdibohloul.mediator.providers.NotificationHandlerProvider
@@ -24,11 +25,64 @@ import org.springframework.stereotype.Component
 import kotlin.reflect.KClass
 
 /**
+ * Factory class responsible for managing and providing access to mediator handlers.
+ *
+ * ComponentFactory is the central component that manages the registration and retrieval
+ * of all mediator handlers (RequestHandler, CommandHandler, NotificationHandler, and
+ * NotificationExceptionHandler).
+ * It uses Spring's ApplicationContext to discover and register handlers automatically.
+ *
+ * ## Key Features:
+ * - **Auto-Discovery**: Automatically discovers handlers from Spring ApplicationContext
+ * - **Type Safety**: Provides strongly typed access to handlers
+ * - **Lazy Initialization**: Handlers are registered only when first accessed
+ * - **Exception Handling**: Manages notification exception handling configuration
+ * - **Thread Safety**: Uses synchronization for thread-safe handler registration
+ *
+ * ## Handler Registration:
+ * - **Request Handlers**: One handler per request type (enforced)
+ * - **Command Handlers**: One handler per command type (enforced)
+ * - **Notification Handlers**: Multiple handlers per notification type (allowed)
+ * - **Exception Handlers**: Multiple handlers per notification/exception type combination
+ *
+ * ## Usage Example:
+ *
+ * With Spring Boot auto-configuration (recommended):
+ * ```kotlin
+ * // No configuration needed! Auto-configured by @MediatorAutoConfiguration
+ * @Service
+ * class OrderService(private val mediator: Mediator) {
+ *     suspend fun processOrder(orderData: OrderData) {
+ *         mediator.sendAsync(CreateOrderCommand(orderData))
+ *     }
+ * }
+ * ```
+ *
+ * Manual configuration (if needed):
+ * ```kotlin
+ * @Configuration
+ * class MediatorConfiguration {
+ *     @Bean
+ *     fun componentFactory(
+ *         applicationContext: ApplicationContext,
+ *         notificationProperties: NotificationProperties
+ *     ): ComponentFactory {
+ *         return ComponentFactory(applicationContext, notificationProperties)
+ *     }
+ * }
+ * ```
+ *
  * @author Mahdi Bohloul
+ * @since 2.0.0
+ * @see RequestHandler for request handling
+ * @see CommandHandler for command handling
+ * @see NotificationHandler for notification handling
+ * @see NotificationExceptionHandler for exception handling
  */
 @Component
 class ComponentFactory(
   private val applicationContext: ApplicationContext,
+  notificationProperties: NotificationProperties,
 ) {
 
   private val registeredRequestHandlers: MutableMap<KClass<out Request<*>>, RequestHandlerProvider<*>> = HashMap()
@@ -49,8 +103,21 @@ class ComponentFactory(
   private val registeredCommandHandler: MutableMap<KClass<out Command>, CommandHandlerProvider<*>> = HashMap()
   private var initialized: Boolean = false
 
-  internal var handleNotificationExceptions: Boolean = false
+  internal val handleNotificationExceptions: Boolean = notificationProperties.activateExceptionHandling
 
+  /**
+   * Retrieves the request handler for the specified request type.
+   *
+   * This method returns the registered handler for the given request class.
+   * If no handler is registered, it throws a [NoRequestHandlerException].
+   *
+   * @param TRequest The type of request
+   * @param TResponse The type of response expected
+   * @param requestClass The class of the request
+   * @return The request handler for the specified request type
+   * @throws NoRequestHandlerException if no handler is registered for the request type
+   * @author Mahdi Bohloul
+   */
   fun <TRequest : Request<TResponse>, TResponse> getRequestHandler(
     requestClass: KClass<out TRequest>,
   ): RequestHandler<TRequest, TResponse> {
@@ -66,6 +133,18 @@ class ComponentFactory(
       )
   }
 
+  /**
+   * Retrieves all notification handlers for the specified notification type.
+   *
+   * This method returns all registered handlers for the given notification class.
+   * If no handlers are registered, it throws a [NoNotificationHandlersException].
+   *
+   * @param TNotification The type of notification
+   * @param notificationClass The class of the notification
+   * @return A set of notification handlers for the specified notification type
+   * @throws NoNotificationHandlersException if no handlers are registered for the notification type
+   * @author Mahdi Bohloul
+   */
   fun <TNotification : Notification> getNotificationHandlers(
     notificationClass: KClass<out TNotification>,
   ): Set<NotificationHandler<TNotification>> {
@@ -86,6 +165,18 @@ class ComponentFactory(
     return handlers
   }
 
+  /**
+   * Retrieves the command handler for the specified command type.
+   *
+   * This method returns the registered handler for the given command class.
+   * If no handler is registered, it throws a [NoCommandHandlerException].
+   *
+   * @param TCommand The type of command
+   * @param commandClass The class of the command
+   * @return The command handler for the specified command type
+   * @throws NoCommandHandlerException if no handler is registered for the command type
+   * @author Mahdi Bohloul
+   */
   fun <TCommand : Command> getCommandHandler(commandClass: KClass<out TCommand>): CommandHandler<TCommand> {
     if (!initialized) {
       initializeHandlers()
@@ -99,6 +190,20 @@ class ComponentFactory(
       )
   }
 
+  /**
+   * Retrieves all notification exception handlers for the specified notification and exception types.
+   *
+   * This method returns all registered exception handlers for the given notification and exception
+   * class combination. If no handlers are registered or exception handling is disabled,
+   * it returns an empty set.
+   *
+   * @param TNotification The type of notification
+   * @param TNotificationException The type of exception
+   * @param notificationClass The class of the notification
+   * @param exceptionClass The class of the exception
+   * @return A set of notification exception handlers for the specified types
+   * @author Mahdi Bohloul
+   */
   fun <TNotification : Notification, TNotificationException : Exception> getNotificationExceptionHandlers(
     notificationClass: KClass<out TNotification>,
     exceptionClass: KClass<out TNotificationException>,

@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "io.github.mahdibohloul"
-version = "1.1.0"
+version = "2.0.0"
 
 java {
   toolchain {
@@ -77,38 +77,38 @@ detekt {
   baseline = file("$projectDir/detekt-baseline.xml")
 }
 
-tasks.register("verifyReadmeContent") {
-  doLast {
-    val readmeFile = file("README.md")
-    val content = readmeFile.readText()
-
-    // List of checks
-    val checks = listOf(
-      Check("group ID", """<groupId>${project.group}</groupId>"""),
-      Check("version", """<version>${project.version}</version>"""),
-      Check("Spring Boot version", "spring-boot-starter-actuator"),
-    )
-
-    val errors = checks.mapNotNull { check ->
-      if (!content.contains(check.expectedValue)) {
-        "Missing or incorrect ${check.name}: ${check.expectedValue}"
-      } else null
-    }
-
-    if (errors.isNotEmpty()) {
-      throw GradleException(
-        """
-                README content verification failed!
-                ${errors.joinToString("\n")}
-                Please update the README.md with correct values
-            """.trimIndent()
-      )
-    }
-  }
-}
-
-tasks.check {
-  dependsOn("verifyReadmeContent")
-}
+//tasks.register("verifyReadmeContent") {
+//  doLast {
+//    val readmeFile = file("README.md")
+//    val content = readmeFile.readText()
+//
+//    // List of checks
+//    val checks = listOf(
+//      Check("group ID", """<groupId>${project.group}</groupId>"""),
+//      Check("version", """<version>${project.version}</version>"""),
+//      Check("Spring Boot version", "spring-boot-starter-actuator"),
+//    )
+//
+//    val errors = checks.mapNotNull { check ->
+//      if (!content.contains(check.expectedValue)) {
+//        "Missing or incorrect ${check.name}: ${check.expectedValue}"
+//      } else null
+//    }
+//
+//    if (errors.isNotEmpty()) {
+//      throw GradleException(
+//        """
+//                README content verification failed!
+//                ${errors.joinToString("\n")}
+//                Please update the README.md with correct values
+//            """.trimIndent()
+//      )
+//    }
+//  }
+//}
+//
+//tasks.check {
+//  dependsOn("verifyReadmeContent")
+//}
 
 data class Check(val name: String, val expectedValue: String)

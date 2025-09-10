@@ -1,0 +1,139 @@
+{
+  "properties": [
+    {
+      "name": "mediator.notification.activate-exception-handling",
+      "type": "java.lang.Boolean",
+      "description": "Whether to activate exception handling for notifications. When enabled, exceptions thrown by notification handlers will be caught and processed by registered NotificationExceptionHandler instances.",
+      "defaultValue": true,
+      "deprecation": {
+        "level": "warning",
+        "reason": "This property controls critical error handling behavior. Disabling it may lead to unhandled exceptions in notification processing. Consider using NotificationExceptionHandler implementations instead of disabling exception handling entirely."
+      }
+    },
+    {
+      "name": "mediator.notification.graceful-shutdown-per-child",
+      "type": "java.time.Duration",
+      "description": "Maximum time to wait for each notification handler to complete during graceful shutdown. This ensures that all in-flight notifications are processed before the application shuts down.",
+      "defaultValue": "30s",
+      "hints": {
+        "values": [
+          {
+            "value": "10s",
+            "description": "Quick shutdown - suitable for fast handlers."
+          },
+          {
+            "value": "30s",
+            "description": "Default timeout - balanced for most use cases."
+          },
+          {
+            "value": "60s",
+            "description": "Extended timeout - for handlers with long-running operations."
+          },
+          {
+            "value": "120s",
+            "description": "Maximum recommended timeout - for critical operations."
+          }
+        ]
+      }
+    },
+    {
+      "name": "mediator.notification.graceful-best-effort-after-cancel",
+      "type": "java.time.Duration",
+      "description": "Additional time to wait after cancellation during graceful shutdown. This provides a best-effort attempt to complete any remaining notification processing.",
+      "defaultValue": "5s",
+      "hints": {
+        "values": [
+          {
+            "value": "1s",
+            "description": "Minimal cleanup time."
+          },
+          {
+            "value": "5s",
+            "description": "Default cleanup time - recommended for most cases."
+          },
+          {
+            "value": "10s",
+            "description": "Extended cleanup time - for handlers with complex cleanup."
+          }
+        ]
+      }
+    }
+  ],
+  "hints": [
+    {
+      "name": "mediator.notification.activate-exception-handling",
+      "values": [
+        {
+          "value": true,
+          "description": "Enable exception handling - exceptions will be caught and processed by NotificationExceptionHandler instances."
+        },
+        {
+          "value": false,
+          "description": "Disable exception handling - exceptions will propagate and may crash the application."
+        }
+      ],
+      "providers": [
+        {
+          "name": "any",
+          "parameters": {
+            "target": "java.lang.Boolean"
+          }
+        }
+      ]
+    },
+    {
+      "name": "mediator.notification.graceful-shutdown-per-child",
+      "values": [
+        {
+          "value": "10s",
+          "description": "Quick shutdown timeout."
+        },
+        {
+          "value": "30s",
+          "description": "Default shutdown timeout."
+        },
+        {
+          "value": "60s",
+          "description": "Extended shutdown timeout."
+        },
+        {
+          "value": "120s",
+          "description": "Maximum recommended timeout."
+        }
+      ],
+      "providers": [
+        {
+          "name": "duration",
+          "parameters": {
+            "target": "java.time.Duration"
+          }
+        }
+      ]
+    },
+    {
+      "name": "mediator.notification.graceful-best-effort-after-cancel",
+      "values": [
+        {
+          "value": "1s",
+          "description": "Minimal cleanup time."
+        },
+        {
+          "value": "5s",
+          "description": "Default cleanup time."
+        },
+        {
+          "value": "10s",
+          "description": "Extended cleanup time."
+        }
+      ],
+      "providers": [
+        {
+          "name": "duration",
+          "parameters": {
+            "target": "java.time.Duration"
+          }
+        }
+      ]
+    }
+  ]
+}

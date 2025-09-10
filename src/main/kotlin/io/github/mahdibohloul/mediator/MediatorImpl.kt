@@ -38,6 +38,7 @@ class MediatorImpl(
     ?.sendAsync(request)
     ?: defaultMediator.sendAsync(request)
 
+  @Suppress("detekt.TooGenericExceptionCaught")
   override suspend fun publishAsync(notification: Notification) {
     try {
       val customPublisher = publisherFactory.getNotificationPublisher(notification)
