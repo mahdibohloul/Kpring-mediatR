@@ -1,7 +1,7 @@
 package io.mahdibohloul.kpringmediator
 
 import io.mahdibohloul.kpringmediator.builder.MediatorBuilder
-import io.mahdibohloul.kpringmediator.core.Mediator
+import io.github.mahdibohloul.mediator.Mediator
 import io.mahdibohloul.kpringmediator.mock.FirstNotificationMockHandler
 import io.mahdibohloul.kpringmediator.mock.FourthNotificationMockHandler
 import io.mahdibohloul.kpringmediator.mock.HelloMockRequest

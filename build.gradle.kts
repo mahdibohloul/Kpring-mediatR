@@ -29,6 +29,7 @@ dependencies {
   implementation("org.springframework:spring-context:6.2.10")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
   implementation("org.slf4j:slf4j-api:2.0.17")
+  implementation("org.springframework.boot:spring-boot-autoconfigure:3.5.5")
 
   testImplementation("org.springframework.boot:spring-boot-starter-test:3.5.5")
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:1.9.23")

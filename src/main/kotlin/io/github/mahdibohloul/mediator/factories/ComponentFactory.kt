@@ -1,30 +1,35 @@
-package io.mahdibohloul.kpringmediator.infrastructure
+package io.github.mahdibohloul.mediator.factories
 
-import io.mahdibohloul.kpringmediator.core.Command
-import io.mahdibohloul.kpringmediator.core.CommandHandler
-import io.mahdibohloul.kpringmediator.core.DuplicateCommandHandlerRegistrationException
-import io.mahdibohloul.kpringmediator.core.DuplicateRequestHandlerRegistrationException
-import io.mahdibohloul.kpringmediator.core.Factory
-import io.mahdibohloul.kpringmediator.core.NoCommandHandlerException
-import io.mahdibohloul.kpringmediator.core.NoNotificationHandlersException
-import io.mahdibohloul.kpringmediator.core.NoRequestHandlerException
-import io.mahdibohloul.kpringmediator.core.Notification
-import io.mahdibohloul.kpringmediator.core.NotificationExceptionHandler
-import io.mahdibohloul.kpringmediator.core.NotificationHandler
-import io.mahdibohloul.kpringmediator.core.Request
-import io.mahdibohloul.kpringmediator.core.RequestHandler
+import io.github.mahdibohloul.mediator.command.Command
+import io.github.mahdibohloul.mediator.command.CommandHandler
+import io.github.mahdibohloul.mediator.DuplicateCommandHandlerRegistrationException
+import io.github.mahdibohloul.mediator.DuplicateRequestHandlerRegistrationException
+import io.github.mahdibohloul.mediator.NoCommandHandlerException
+import io.github.mahdibohloul.mediator.NoNotificationHandlersException
+import io.github.mahdibohloul.mediator.NoRequestHandlerException
+import io.github.mahdibohloul.mediator.notification.Notification
+import io.github.mahdibohloul.mediator.notification.NotificationExceptionHandler
+import io.github.mahdibohloul.mediator.notification.NotificationHandler
+import io.github.mahdibohloul.mediator.providers.CommandHandlerProvider
+import io.github.mahdibohloul.mediator.providers.NotificationExceptionHandlerProvider
+import io.github.mahdibohloul.mediator.providers.NotificationHandlerProvider
+import io.github.mahdibohloul.mediator.providers.RequestHandlerProvider
+import io.github.mahdibohloul.mediator.request.Request
+import io.github.mahdibohloul.mediator.request.RequestHandler
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationContext
 import org.springframework.core.GenericTypeResolver
 import kotlin.reflect.KClass
+import org.springframework.stereotype.Component
 
 /**
  * @author Mahdi Bohloul
  */
-class DefaultFactory(
+@Component
+class ComponentFactory(
   private val applicationContext: ApplicationContext,
-) : Factory {
+) {
 
   private val registeredRequestHandlers: MutableMap<KClass<out Request<*>>, RequestHandlerProvider<*>> = HashMap()
   private val registeredNotificationHandlers: MutableMap<
@@ -46,7 +51,7 @@ class DefaultFactory(
 
   internal var handleNotificationExceptions: Boolean = false
 
-  override fun <TRequest : Request<TResponse>, TResponse> getRequestHandler(
+  fun <TRequest : Request<TResponse>, TResponse> getRequestHandler(
     requestClass: KClass<out TRequest>,
   ): RequestHandler<TRequest, TResponse> {
     if (!initialized) {
@@ -61,7 +66,7 @@ class DefaultFactory(
       )
   }
 
-  override fun <TNotification : Notification> getNotificationHandlers(
+  fun <TNotification : Notification> getNotificationHandlers(
     notificationClass: KClass<out TNotification>,
   ): Set<NotificationHandler<TNotification>> {
     if (!initialized) {
@@ -81,7 +86,7 @@ class DefaultFactory(
     return handlers
   }
 
-  override fun <TCommand : Command> getCommandHandler(commandClass: KClass<out TCommand>): CommandHandler<TCommand> {
+  fun <TCommand : Command> getCommandHandler(commandClass: KClass<out TCommand>): CommandHandler<TCommand> {
     if (!initialized) {
       initializeHandlers()
     }
@@ -94,7 +99,7 @@ class DefaultFactory(
       )
   }
 
-  override fun <TNotification : Notification, TNotificationException : Exception> getNotificationExceptionHandlers(
+  fun <TNotification : Notification, TNotificationException : Exception> getNotificationExceptionHandlers(
     notificationClass: KClass<out TNotification>,
     exceptionClass: KClass<out TNotificationException>,
   ): Set<NotificationExceptionHandler<TNotification, TNotificationException>> {
@@ -151,7 +156,7 @@ class DefaultFactory(
 
       val requestProvider = RequestHandlerProvider(applicationContext, handler::class)
       registeredRequestHandlers[requestType] = requestProvider
-      logger.info("Registered RequestHandler ${handler::class.simpleName} to handle request ${requestType.simpleName}")
+      logger.debug("Registered RequestHandler ${handler::class.simpleName} to handle request ${requestType.simpleName}")
     }
   }
 
@@ -167,7 +172,7 @@ class DefaultFactory(
       registeredNotificationHandlers[notificationType]?.add(eventProvider) ?: kotlin.run {
         registeredNotificationHandlers[notificationType] = mutableSetOf(eventProvider)
       }
-      logger.info(
+      logger.debug(
         "Registered NotificationHandler ${notificationHandler::class.simpleName} " +
           "to receive Notification ${notificationType.simpleName}",
       )
@@ -213,11 +218,11 @@ class DefaultFactory(
 
       val requestProvider = CommandHandlerProvider(applicationContext, handler::class)
       registeredCommandHandler[requestType] = requestProvider
-      logger.info("Registered CommandHandler ${handler::class.simpleName} to handle request ${requestType.simpleName}")
+      logger.debug("Registered CommandHandler ${handler::class.simpleName} to handle request ${requestType.simpleName}")
     }
   }
 
   companion object {
-    val logger: Logger = LoggerFactory.getLogger(DefaultFactory::class.java)
+    val logger: Logger = LoggerFactory.getLogger(ComponentFactory::class.java)
   }
 }

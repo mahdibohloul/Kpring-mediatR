@@ -1,4 +1,4 @@
-package io.mahdibohloul.kpringmediator.core
+package io.github.mahdibohloul.mediator.notification
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers

@@ -1,4 +1,4 @@
-package io.mahdibohloul.kpringmediator.core
+package io.github.mahdibohloul.mediator.request
 
 /**
  * @author Mahdi Bohloul

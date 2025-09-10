@@ -1,8 +1,8 @@
 package io.mahdibohloul.kpringmediator.mock
 
-import io.mahdibohloul.kpringmediator.core.Notification
-import io.mahdibohloul.kpringmediator.core.NotificationExceptionHandler
-import io.mahdibohloul.kpringmediator.core.NotificationHandler
+import io.github.mahdibohloul.mediator.notification.Notification
+import io.github.mahdibohloul.mediator.notification.NotificationExceptionHandler
+import io.github.mahdibohloul.mediator.notification.NotificationHandler
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import org.slf4j.LoggerFactory
