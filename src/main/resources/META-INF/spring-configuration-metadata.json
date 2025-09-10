@@ -1,0 +1,33 @@
+{
+  "groups": [
+    {
+      "name": "mediator.notification",
+      "type": "io.github.mahdibohloul.mediator.notification.NotificationProperties",
+      "sourceType": "io.github.mahdibohloul.mediator.notification.NotificationProperties",
+      "description": "Configuration properties for Kpring MediatR notification handling."
+    }
+  ],
+  "properties": [
+    {
+      "name": "mediator.notification.activate-exception-handling",
+      "type": "java.lang.Boolean",
+      "sourceType": "io.github.mahdibohloul.mediator.notification.NotificationProperties",
+      "description": "Whether to activate exception handling for notifications. When enabled, exceptions thrown by notification handlers will be caught and processed by registered NotificationExceptionHandler instances.",
+      "defaultValue": true
+    },
+    {
+      "name": "mediator.notification.graceful-shutdown-per-child",
+      "type": "java.time.Duration",
+      "sourceType": "io.github.mahdibohloul.mediator.notification.NotificationProperties",
+      "description": "Maximum time to wait for each notification handler to complete during graceful shutdown. This ensures that all in-flight notifications are processed before the application shuts down.",
+      "defaultValue": "30s"
+    },
+    {
+      "name": "mediator.notification.graceful-best-effort-after-cancel",
+      "type": "java.time.Duration",
+      "sourceType": "io.github.mahdibohloul.mediator.notification.NotificationProperties",
+      "description": "Additional time to wait after cancellation during graceful shutdown. This provides a best-effort attempt to complete any remaining notification processing.",
+      "defaultValue": "5s"
+    }
+  ]
+}

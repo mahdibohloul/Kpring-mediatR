@@ -1,38 +1,51 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("org.sonarqube") version "3.3"
-  kotlin("jvm") version "1.5.31"
-  `maven-publish`
-  signing
-  id("org.jetbrains.dokka") version "0.10.1"
+  kotlin("jvm") version "1.9.23"
+  kotlin("plugin.spring") version "1.9.23"
+  id("io.spring.dependency-management") version "1.1.7"
+
+  id("com.vanniktech.maven.publish") version "0.34.0"
+  id("com.diffplug.spotless") version "7.2.1"
+  id("io.gitlab.arturbosch.detekt") version "1.23.6"
+  `java-library`
 }
 
 group = "io.github.mahdibohloul"
-version = "1.1.0"
-java.sourceCompatibility = JavaVersion.VERSION_11
+version = "2.0.0"
+
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(21)
+  }
+}
+
 
 repositories {
   mavenCentral()
 }
 
 dependencies {
-  implementation(group = "org.springframework", name = "spring-context", version = "5.1.4.RELEASE")
-  implementation(group = "org.slf4j", name = "slf4j-api", version = "1.7.25")
-  implementation(group = "javax.validation", name = "validation-api", version = "2.0.1.Final")
-  implementation("org.jetbrains.kotlin:kotlin-reflect")
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-native-mt")
-  implementation("junit:junit:4.13.2")
-  testImplementation("org.springframework.boot:spring-boot-starter-test:2.6.1")
-  testImplementation("org.jetbrains.kotlin:kotlin-test:1.5.31")
-  testImplementation(group = "org.mockito", name = "mockito-core", version = "2.23.4")
+  implementation("org.springframework:spring-context:6.2.10")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.9.0")
+  implementation("org.slf4j:slf4j-api:2.0.17")
+  implementation("org.springframework.boot:spring-boot-autoconfigure:3.5.5")
+
+  testImplementation("org.springframework.boot:spring-boot-starter-test:3.5.5")
+  testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:1.9.23")
+  testImplementation("io.projectreactor:reactor-test:3.7.9")
+  testImplementation("io.projectreactor:reactor-core:3.7.9")
+  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.9.0")
+
+  testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
 }
 
-tasks.withType<KotlinCompile> {
-  kotlinOptions {
-    freeCompilerArgs = listOf("-Xjsr305=strict")
-    jvmTarget = "11"
+kotlin {
+  compilerOptions {
+    freeCompilerArgs.addAll("-Xjsr305=strict")
   }
 }
 
@@ -40,69 +53,104 @@ tasks.withType<Test> {
   useJUnitPlatform()
 }
 
-tasks.withType<Sign> {
-  onlyIf {
-    !version.toString().endsWith("SNAPSHOT")
+spotless {
+  kotlin {
+    target("src/**/*.kt")
+    ktlint()
+      .editorConfigOverride(
+        mapOf(
+          "indent_size" to 2,
+          "ktlint_standard_filename" to "disabled",
+          "ktlint_standard_max-line-length" to "120"
+        )
+      )
+    trimTrailingWhitespace()
+    leadingTabsToSpaces()
+    endWithNewline()
   }
 }
 
-java {
-  withJavadocJar()
-  withSourcesJar()
+detekt {
+  buildUponDefaultConfig = true
+  allRules = true
+  config.setFrom("$projectDir/detekt.yml")
+  baseline = file("$projectDir/detekt-baseline.xml")
 }
 
-signing {
-  sign(publishing.publications)
-}
+mavenPublishing {
+  publishToMavenCentral()
+  signAllPublications()
 
-publishing {
-  repositories {
-    maven {
-      name = "GitHubPackages"
-      url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-      credentials {
-        username = project.property("ossrhUsername").toString()
-        password = project.property("ossrhPassword").toString()
+  pom {
+    name.set("kpring-mediatr-starter")
+    description.set(
+      "A powerful implementation of the Mediator Pattern for the JVM, " +
+        "built with Kotlin and native coroutine support for the Spring Framework."
+    )
+    url.set("https://github.com/mahdibohloul/Kpring-mediatR")
+    licenses {
+      license {
+        name.set("MIT License")
+        url.set("https://opensource.org/licenses/MIT")
+        distribution.set("repo")
       }
     }
-  }
-
-  publications {
-    create("mavenJava", MavenPublication::class.java).apply {
-      groupId = project.group.toString()
-      this.artifactId = artifactId
-      version = project.version.toString()
-      pom {
-        description.set("Implementation of Mediator pattern using Kotlin coroutines for JVM and Spring Framework")
-        name.set(artifactId)
-        url.set("https://github.com/mahdibohloul/Kpring-mediatR")
-        licenses {
-          license {
-            name.set("MIT License")
-            url.set("https://opensource.org/licenses/MIT")
-            distribution.set("repo")
-          }
-        }
-        developers {
-          developer {
-            id.set("mahdibohloul")
-            name.set("Mahdi Bohloul")
-            email.set("mahdiibohloul@gmail.com")
-          }
-        }
-        scm {
-          url.set("https://github.com/mahdibohloul/Kpring-mediatR")
-        }
+    developers {
+      developer {
+        id.set("mahdibohloul")
+        name.set("Mahdi Bohloul")
+        email.set("mahdiibohloul@gmail.com")
+        url.set("https://github.com/mahdibohloul/")
       }
-      from(components["java"])
+    }
+    scm {
+      url.set("https://github.com/mahdibohloul/Kpring-mediatR")
     }
   }
 }
 
-sonarqube {
-  properties {
-    property("sonar.projectKey", "mahdibohloul_spring-reactive-mediatR")
-    property("sonar.organization", "mahdibohloul")
-    property("sonar.host.url", "https://sonarcloud.io")
+tasks.register("verifyReadmeContent") {
+  group = "verification"
+  description = "Verifies that README.md contains correct version information"
+
+  doLast {
+    val readmeFile = file("README.md")
+    val content = readmeFile.readText()
+
+    println("🔍 Verifying version consistency in README...")
+
+    // Version consistency checks
+    val versionChecks = listOf(
+      Check("Maven version", """<version>${project.version}</version>"""),
+      Check("Gradle version", """implementation("${project.group}:kpring-mediatr-starter:${project.version}")"""),
+    )
+
+    val errors = versionChecks.mapNotNull { check ->
+      if (!content.contains(check.expectedValue)) {
+        "❌ Missing or incorrect ${check.name}: ${check.expectedValue}"
+      } else null
+    }
+
+    if (errors.isNotEmpty()) {
+      println("\n❌ Version verification failed!")
+      errors.forEach { error -> println(error) }
+      throw GradleException(
+        """
+        Version verification failed!
+        
+        ${errors.joinToString("\n")}
+        
+        Please update the README.md with correct version ${project.version} and run the task again.
+        """.trimIndent()
+      )
+    } else {
+      println("✅ Version consistency verified: ${project.version}")
+    }
   }
 }
+
+tasks.check {
+  dependsOn("verifyReadmeContent")
+}
+
+data class Check(val name: String, val expectedValue: String)

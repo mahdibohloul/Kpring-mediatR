@@ -1,0 +1,333 @@
+package io.github.mahdibohloul.mediator.factories
+
+import io.github.mahdibohloul.mediator.DuplicateCommandHandlerRegistrationException
+import io.github.mahdibohloul.mediator.DuplicateRequestHandlerRegistrationException
+import io.github.mahdibohloul.mediator.NoCommandHandlerException
+import io.github.mahdibohloul.mediator.NoNotificationHandlersException
+import io.github.mahdibohloul.mediator.NoRequestHandlerException
+import io.github.mahdibohloul.mediator.command.Command
+import io.github.mahdibohloul.mediator.command.CommandHandler
+import io.github.mahdibohloul.mediator.notification.Notification
+import io.github.mahdibohloul.mediator.notification.NotificationExceptionHandler
+import io.github.mahdibohloul.mediator.notification.NotificationHandler
+import io.github.mahdibohloul.mediator.notification.NotificationProperties
+import io.github.mahdibohloul.mediator.providers.CommandHandlerProvider
+import io.github.mahdibohloul.mediator.providers.NotificationExceptionHandlerProvider
+import io.github.mahdibohloul.mediator.providers.NotificationHandlerProvider
+import io.github.mahdibohloul.mediator.providers.RequestHandlerProvider
+import io.github.mahdibohloul.mediator.request.Request
+import io.github.mahdibohloul.mediator.request.RequestHandler
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.context.ApplicationContext
+import org.springframework.core.GenericTypeResolver
+import org.springframework.stereotype.Component
+import kotlin.reflect.KClass
+
+/**
+ * Factory class responsible for managing and providing access to mediator handlers.
+ *
+ * ComponentFactory is the central component that manages the registration and retrieval
+ * of all mediator handlers (RequestHandler, CommandHandler, NotificationHandler, and
+ * NotificationExceptionHandler).
+ * It uses Spring's ApplicationContext to discover and register handlers automatically.
+ *
+ * ## Key Features:
+ * - **Auto-Discovery**: Automatically discovers handlers from Spring ApplicationContext
+ * - **Type Safety**: Provides strongly typed access to handlers
+ * - **Lazy Initialization**: Handlers are registered only when first accessed
+ * - **Exception Handling**: Manages notification exception handling configuration
+ * - **Thread Safety**: Uses synchronization for thread-safe handler registration
+ *
+ * ## Handler Registration:
+ * - **Request Handlers**: One handler per request type (enforced)
+ * - **Command Handlers**: One handler per command type (enforced)
+ * - **Notification Handlers**: Multiple handlers per notification type (allowed)
+ * - **Exception Handlers**: Multiple handlers per notification/exception type combination
+ *
+ * ## Usage Example:
+ *
+ * With Spring Boot auto-configuration (recommended):
+ * ```kotlin
+ * // No configuration needed! Auto-configured by @MediatorAutoConfiguration
+ * @Service
+ * class OrderService(private val mediator: Mediator) {
+ *     suspend fun processOrder(orderData: OrderData) {
+ *         mediator.sendAsync(CreateOrderCommand(orderData))
+ *     }
+ * }
+ * ```
+ *
+ * Manual configuration (if needed):
+ * ```kotlin
+ * @Configuration
+ * class MediatorConfiguration {
+ *     @Bean
+ *     fun componentFactory(
+ *         applicationContext: ApplicationContext,
+ *         notificationProperties: NotificationProperties
+ *     ): ComponentFactory {
+ *         return ComponentFactory(applicationContext, notificationProperties)
+ *     }
+ * }
+ * ```
+ *
+ * @author Mahdi Bohloul
+ * @since 2.0.0
+ * @see RequestHandler for request handling
+ * @see CommandHandler for command handling
+ * @see NotificationHandler for notification handling
+ * @see NotificationExceptionHandler for exception handling
+ */
+@Component
+class ComponentFactory(
+  private val applicationContext: ApplicationContext,
+  notificationProperties: NotificationProperties,
+) {
+
+  private val registeredRequestHandlers: MutableMap<KClass<out Request<*>>, RequestHandlerProvider<*>> = HashMap()
+  private val registeredNotificationHandlers: MutableMap<
+    KClass<out Notification>,
+    MutableSet<NotificationHandlerProvider<*>>,
+    > = HashMap()
+
+  private val registeredNotificationExceptionHandlers:
+    MutableMap<
+      KClass<out Notification>,
+      MutableMap<
+        KClass<out Exception>,
+        MutableSet<NotificationExceptionHandlerProvider<*>>,
+        >,
+      > =
+    HashMap()
+  private val registeredCommandHandler: MutableMap<KClass<out Command>, CommandHandlerProvider<*>> = HashMap()
+  private var initialized: Boolean = false
+
+  internal val handleNotificationExceptions: Boolean = notificationProperties.activateExceptionHandling
+
+  /**
+   * Retrieves the request handler for the specified request type.
+   *
+   * This method returns the registered handler for the given request class.
+   * If no handler is registered, it throws a [NoRequestHandlerException].
+   *
+   * @param TRequest The type of request
+   * @param TResponse The type of response expected
+   * @param requestClass The class of the request
+   * @return The request handler for the specified request type
+   * @throws NoRequestHandlerException if no handler is registered for the request type
+   * @author Mahdi Bohloul
+   */
+  fun <TRequest : Request<TResponse>, TResponse> getRequestHandler(
+    requestClass: KClass<out TRequest>,
+  ): RequestHandler<TRequest, TResponse> {
+    if (!initialized) {
+      initializeHandlers()
+    }
+    registeredRequestHandlers[requestClass]?.let {
+      return it.handler as RequestHandler<TRequest, TResponse>
+    }
+      ?: throw NoRequestHandlerException(
+        "No RequestHandler " +
+          "is registered to handle request of type ${requestClass.simpleName}",
+      )
+  }
+
+  /**
+   * Retrieves all notification handlers for the specified notification type.
+   *
+   * This method returns all registered handlers for the given notification class.
+   * If no handlers are registered, it throws a [NoNotificationHandlersException].
+   *
+   * @param TNotification The type of notification
+   * @param notificationClass The class of the notification
+   * @return A set of notification handlers for the specified notification type
+   * @throws NoNotificationHandlersException if no handlers are registered for the notification type
+   * @author Mahdi Bohloul
+   */
+  fun <TNotification : Notification> getNotificationHandlers(
+    notificationClass: KClass<out TNotification>,
+  ): Set<NotificationHandler<TNotification>> {
+    if (!initialized) {
+      initializeHandlers()
+    }
+    val handlers = mutableSetOf<NotificationHandler<TNotification>>()
+    registeredNotificationHandlers[notificationClass]?.let {
+      it.forEach { provider ->
+        val handler = provider.handler as NotificationHandler<TNotification>
+        handlers.add(handler)
+      }
+    }
+      ?: throw NoNotificationHandlersException(
+        "No NotificationHandlers are " +
+          "registered to receive notification of type ${notificationClass.simpleName}",
+      )
+    return handlers
+  }
+
+  /**
+   * Retrieves the command handler for the specified command type.
+   *
+   * This method returns the registered handler for the given command class.
+   * If no handler is registered, it throws a [NoCommandHandlerException].
+   *
+   * @param TCommand The type of command
+   * @param commandClass The class of the command
+   * @return The command handler for the specified command type
+   * @throws NoCommandHandlerException if no handler is registered for the command type
+   * @author Mahdi Bohloul
+   */
+  fun <TCommand : Command> getCommandHandler(commandClass: KClass<out TCommand>): CommandHandler<TCommand> {
+    if (!initialized) {
+      initializeHandlers()
+    }
+    registeredCommandHandler[commandClass]?.let { provider ->
+      return provider.handler as CommandHandler<TCommand>
+    }
+      ?: throw NoCommandHandlerException(
+        "No CommandHandler is " +
+          "registered to handle request of type ${commandClass.simpleName}",
+      )
+  }
+
+  /**
+   * Retrieves all notification exception handlers for the specified notification and exception types.
+   *
+   * This method returns all registered exception handlers for the given notification and exception
+   * class combination. If no handlers are registered or exception handling is disabled,
+   * it returns an empty set.
+   *
+   * @param TNotification The type of notification
+   * @param TNotificationException The type of exception
+   * @param notificationClass The class of the notification
+   * @param exceptionClass The class of the exception
+   * @return A set of notification exception handlers for the specified types
+   * @author Mahdi Bohloul
+   */
+  fun <TNotification : Notification, TNotificationException : Exception> getNotificationExceptionHandlers(
+    notificationClass: KClass<out TNotification>,
+    exceptionClass: KClass<out TNotificationException>,
+  ): Set<NotificationExceptionHandler<TNotification, TNotificationException>> {
+    if (!handleNotificationExceptions) {
+      logger.warn("Notification exception handling is disabled")
+      return emptySet()
+    }
+    if (!initialized) {
+      initializeHandlers()
+    }
+    val handlers = mutableSetOf<NotificationExceptionHandler<TNotification, TNotificationException>>()
+    registeredNotificationExceptionHandlers[notificationClass]?.get(exceptionClass)?.let {
+      it.forEach { provider ->
+        val handler = provider.handler as NotificationExceptionHandler<TNotification, TNotificationException>
+        handlers.add(handler)
+      }
+    }
+      ?: logger.warn(
+        "No NotificationExceptionHandlers are registered to " +
+          "receive notification exception of type ${notificationClass.simpleName}",
+      )
+    return handlers
+  }
+
+  private fun initializeHandlers() {
+    synchronized(this) {
+      if (!initialized) {
+        applicationContext.getBeanNamesForType(RequestHandler::class.java)
+          .forEach { registerRequestHandler(it) }
+        applicationContext.getBeanNamesForType(NotificationHandler::class.java)
+          .forEach { registerNotificationHandler(it) }
+        applicationContext.getBeanNamesForType(CommandHandler::class.java)
+          .forEach { registerCommandHandler(it) }
+        if (handleNotificationExceptions) {
+          applicationContext.getBeanNamesForType(NotificationExceptionHandler::class.java)
+            .forEach { registerNotificationExceptionHandler(it) }
+        }
+        initialized = true
+      }
+    }
+  }
+
+  private fun registerRequestHandler(requestHandlerName: String) {
+    logger.debug("Registering RequestHandler with name $requestHandlerName")
+    val handler: RequestHandler<*, *> = applicationContext.getBean(requestHandlerName) as RequestHandler<*, *>
+    val generics = GenericTypeResolver.resolveTypeArguments(handler::class.java, RequestHandler::class.java)
+    generics?.let {
+      val requestType = (it[0] as Class<out Request<*>>).kotlin
+      if (registeredRequestHandlers.contains(requestType)) {
+        throw DuplicateRequestHandlerRegistrationException(
+          "${requestType.simpleName} already has a registered handler. Each request must have a single request handler",
+        )
+      }
+
+      val requestProvider = RequestHandlerProvider(applicationContext, handler::class)
+      registeredRequestHandlers[requestType] = requestProvider
+      logger.debug("Registered RequestHandler ${handler::class.simpleName} to handle request ${requestType.simpleName}")
+    }
+  }
+
+  private fun registerNotificationHandler(notificationHandlerName: String) {
+    logger.debug("Registering NotificationHandler with name $notificationHandlerName")
+    val notificationHandler: NotificationHandler<*> =
+      applicationContext.getBean(notificationHandlerName) as NotificationHandler<*>
+    val generics =
+      GenericTypeResolver.resolveTypeArguments(notificationHandler::class.java, NotificationHandler::class.java)
+    generics?.let {
+      val notificationType = (it[0] as Class<out Notification>).kotlin
+      val eventProvider = NotificationHandlerProvider(applicationContext, notificationHandler::class)
+      registeredNotificationHandlers[notificationType]?.add(eventProvider) ?: kotlin.run {
+        registeredNotificationHandlers[notificationType] = mutableSetOf(eventProvider)
+      }
+      logger.debug(
+        "Registered NotificationHandler ${notificationHandler::class.simpleName} " +
+          "to receive Notification ${notificationType.simpleName}",
+      )
+    }
+  }
+
+  private fun registerNotificationExceptionHandler(notificationExceptionHandlerName: String) {
+    logger.debug("Registering NotificationExceptionHandler with name $notificationExceptionHandlerName")
+    val notificationExceptionHandler: NotificationExceptionHandler<*, *> =
+      applicationContext.getBean(notificationExceptionHandlerName) as NotificationExceptionHandler<*, *>
+    val generics =
+      GenericTypeResolver.resolveTypeArguments(
+        notificationExceptionHandler::class.java,
+        NotificationExceptionHandler::class.java,
+      )
+    generics?.let {
+      val notificationType = (it[0] as Class<out Notification>).kotlin
+      val exceptionType = (it[1] as Class<out Exception>).kotlin
+      val eventProvider =
+        NotificationExceptionHandlerProvider(applicationContext, notificationExceptionHandler::class)
+      registeredNotificationExceptionHandlers[notificationType]?.let { exceptionTypes ->
+        exceptionTypes[exceptionType]?.add(eventProvider) ?: kotlin.run {
+          exceptionTypes[exceptionType] = mutableSetOf(eventProvider)
+        }
+      } ?: kotlin.run {
+        registeredNotificationExceptionHandlers[notificationType] =
+          mutableMapOf(exceptionType to mutableSetOf(eventProvider))
+      }
+    }
+  }
+
+  private fun registerCommandHandler(commandHandlerName: String) {
+    logger.debug("Registering CommandHandler with name $commandHandlerName")
+    val handler: CommandHandler<*> = applicationContext.getBean(commandHandlerName) as CommandHandler<*>
+    val generics = GenericTypeResolver.resolveTypeArguments(handler::class.java, CommandHandler::class.java)
+    generics?.let {
+      val requestType = (it[0] as Class<out Command>).kotlin
+      if (registeredCommandHandler.contains(requestType)) {
+        throw DuplicateCommandHandlerRegistrationException(
+          "${requestType.simpleName} already has a registered handler. Each request must have a single request handler",
+        )
+      }
+
+      val requestProvider = CommandHandlerProvider(applicationContext, handler::class)
+      registeredCommandHandler[requestType] = requestProvider
+      logger.debug("Registered CommandHandler ${handler::class.simpleName} to handle request ${requestType.simpleName}")
+    }
+  }
+
+  companion object {
+    val logger: Logger = LoggerFactory.getLogger(ComponentFactory::class.java)
+  }
+}
