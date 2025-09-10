@@ -1,10 +1,11 @@
-package io.mahdibohloul.kpringmediator.mock
+package io.github.mahdibohloul.mediator.mock
 
 import io.github.mahdibohloul.mediator.notification.Notification
 import io.github.mahdibohloul.mediator.notification.NotificationExceptionHandler
 import io.github.mahdibohloul.mediator.notification.NotificationHandler
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
@@ -65,5 +66,22 @@ class MockNotificationExceptionHandler : NotificationExceptionHandler<Notificati
 
   companion object {
     private val logger = LoggerFactory.getLogger(MockNotificationExceptionHandler::class.java)
+  }
+}
+
+@Component
+class SlowNotificationMockHandler : NotificationHandler<NotificationMock> {
+  override suspend fun handle(notification: NotificationMock) {
+    logger.info("SlowNotificationMockHandler: Starting to handle notification (will take 5 seconds)")
+
+    delay(5000)
+
+    logger.info("SlowNotificationMockHandler: Completed handling notification after 5 seconds")
+  }
+
+  override fun getCoroutineDispatcher(): CoroutineDispatcher = Dispatchers.IO
+
+  companion object {
+    private val logger = LoggerFactory.getLogger(SlowNotificationMockHandler::class.java)
   }
 }

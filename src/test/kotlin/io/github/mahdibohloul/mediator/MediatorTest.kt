@@ -1,17 +1,17 @@
-package io.mahdibohloul.kpringmediator
+package io.github.mahdibohloul.mediator
 
-import io.mahdibohloul.kpringmediator.builder.MediatorBuilder
-import io.github.mahdibohloul.mediator.Mediator
-import io.mahdibohloul.kpringmediator.mock.FirstNotificationMockHandler
-import io.mahdibohloul.kpringmediator.mock.FourthNotificationMockHandler
-import io.mahdibohloul.kpringmediator.mock.HelloMockRequest
-import io.mahdibohloul.kpringmediator.mock.HelloMockRequestHandler
-import io.mahdibohloul.kpringmediator.mock.LoggerMockCommand
-import io.mahdibohloul.kpringmediator.mock.LoggerMockCommandHandler
-import io.mahdibohloul.kpringmediator.mock.MockNotificationExceptionHandler
-import io.mahdibohloul.kpringmediator.mock.NotificationMock
-import io.mahdibohloul.kpringmediator.mock.SecondNotificationMockHandler
-import io.mahdibohloul.kpringmediator.mock.ThirdNotificationMockHandler
+import io.github.mahdibohloul.mediator.builder.MediatorBuilder
+import io.github.mahdibohloul.mediator.mock.FirstNotificationMockHandler
+import io.github.mahdibohloul.mediator.mock.FourthNotificationMockHandler
+import io.github.mahdibohloul.mediator.mock.HelloMockRequest
+import io.github.mahdibohloul.mediator.mock.HelloMockRequestHandler
+import io.github.mahdibohloul.mediator.mock.LoggerMockCommand
+import io.github.mahdibohloul.mediator.mock.LoggerMockCommandHandler
+import io.github.mahdibohloul.mediator.mock.MockNotificationExceptionHandler
+import io.github.mahdibohloul.mediator.mock.NotificationMock
+import io.github.mahdibohloul.mediator.mock.SecondNotificationMockHandler
+import io.github.mahdibohloul.mediator.mock.SlowNotificationMockHandler
+import io.github.mahdibohloul.mediator.mock.ThirdNotificationMockHandler
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -25,7 +25,7 @@ import kotlin.test.assertEquals
   classes = [
     ApplicationContext::class, HelloMockRequestHandler::class, LoggerMockCommandHandler::class,
     FirstNotificationMockHandler::class, SecondNotificationMockHandler::class, ThirdNotificationMockHandler::class,
-    FourthNotificationMockHandler::class, MockNotificationExceptionHandler::class,
+    FourthNotificationMockHandler::class, MockNotificationExceptionHandler::class, SlowNotificationMockHandler::class,
   ],
 )
 class MediatorTest {

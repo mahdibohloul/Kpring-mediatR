@@ -3,11 +3,11 @@ package io.github.mahdibohloul.mediator.publisher.factories
 import io.github.mahdibohloul.mediator.notification.Notification
 import io.github.mahdibohloul.mediator.publisher.Publisher
 import io.github.mahdibohloul.mediator.publisher.annotations.CustomNotificationPublisher
-import kotlin.reflect.KClass
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationContext
 import org.springframework.core.annotation.AnnotationUtils
 import org.springframework.stereotype.Component
+import kotlin.reflect.KClass
 
 @Component
 class NotificationPublisherFactory(
@@ -29,10 +29,11 @@ class NotificationPublisherFactory(
       .also { logger.info("Discovered ${it.size} notification publishers") }
   }
 
-  fun getNotificationPublisher(notification: Notification): Publisher? =
-    publishers.filterKeys { it.isInstance(notification) }.values.singleOrNull()?.also {
-      logger.info("Found publisher for notification ${notification::class.simpleName}")
-    }
+  fun getNotificationPublisher(notification: Notification): Publisher? = publishers
+    .filterKeys { it.isInstance(notification) }
+    .values
+    .singleOrNull()
+    ?.also { logger.info("Found publisher for notification ${notification::class.simpleName}") }
 
   private fun findNotificationType(publisher: Publisher): Array<KClass<out Notification>> {
     val annotation = AnnotationUtils.findAnnotation(publisher::class.java, CustomNotificationPublisher::class.java)

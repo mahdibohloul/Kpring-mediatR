@@ -9,4 +9,6 @@ import io.github.mahdibohloul.mediator.publisher.Publisher
  *
  * @author Mahdi Bohloul
  */
-interface Mediator: Dispatcher, Publisher
+interface Mediator :
+  Dispatcher,
+  Publisher

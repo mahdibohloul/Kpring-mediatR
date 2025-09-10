@@ -1,9 +1,9 @@
 package io.github.mahdibohloul.mediator.publisher.annotations
 
 import io.github.mahdibohloul.mediator.notification.Notification
-import kotlin.reflect.KClass
 import org.springframework.core.annotation.AliasFor
 import org.springframework.stereotype.Component
+import kotlin.reflect.KClass
 
 /**
  * This annotation will be used to annotate a component that will be used to publish notifications.

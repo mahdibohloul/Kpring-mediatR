@@ -20,11 +20,19 @@ class MediatorImpl(
   private val requestFactory: RequestDispatcherFactory,
   private val commandFactory: CommandDispatcherFactory,
 ) : Mediator {
-  override suspend fun sendAsync(command: Command): Unit =
-    commandFactory.getCommandDispatcher(command)?.sendAsync(command) ?: defaultMediator.sendAsync(command)
+  override suspend fun sendAsync(
+    command: Command,
+  ): Unit = commandFactory
+    .getCommandDispatcher(command)
+    ?.sendAsync(command)
+    ?: defaultMediator.sendAsync(command)
 
-  override suspend fun <TRequest : Request<TResponse>, TResponse> sendAsync(request: TRequest): TResponse =
-    requestFactory.getRequestDispatcher(request)?.sendAsync(request) ?: defaultMediator.sendAsync(request)
+  override suspend fun <TRequest : Request<TResponse>, TResponse> sendAsync(
+    request: TRequest,
+  ): TResponse = requestFactory
+    .getRequestDispatcher(request)
+    ?.sendAsync(request)
+    ?: defaultMediator.sendAsync(request)
 
   override suspend fun publishAsync(notification: Notification) {
     CoroutineScope(Dispatchers.Default).launch {

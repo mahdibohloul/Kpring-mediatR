@@ -1,14 +1,13 @@
 package io.github.mahdibohloul.mediator.dispatcher.factories
 
-import io.github.mahdibohloul.mediator.request.Request
 import io.github.mahdibohloul.mediator.dispatcher.RequestDispatcher
 import io.github.mahdibohloul.mediator.dispatcher.annotations.CustomRequestDispatcher
-import kotlin.reflect.KClass
-import org.slf4j.Logger
+import io.github.mahdibohloul.mediator.request.Request
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationContext
 import org.springframework.core.annotation.AnnotationUtils
 import org.springframework.stereotype.Component
+import kotlin.reflect.KClass
 
 @Component
 class RequestDispatcherFactory(
@@ -30,10 +29,13 @@ class RequestDispatcherFactory(
       .also { logger.info("Discovered ${it.size} request dispatchers") }
   }
 
-  fun getRequestDispatcher(request: Request<*>): RequestDispatcher? =
-    dispatchers.filterKeys { it.isInstance(request) }.values.singleOrNull()?.also {
-      logger.info("Found dispatcher for request ${request::class.simpleName}")
-    }
+  fun getRequestDispatcher(
+    request: Request<*>,
+  ): RequestDispatcher? = dispatchers
+    .filterKeys { it.isInstance(request) }
+    .values
+    .singleOrNull()
+    ?.also { logger.info("Found dispatcher for request ${request::class.simpleName}") }
 
   private fun getSupportedRequestTypes(dispatcher: RequestDispatcher): Array<KClass<out Request<*>>> {
     val annotation = AnnotationUtils.findAnnotation(dispatcher::class.java, CustomRequestDispatcher::class.java)

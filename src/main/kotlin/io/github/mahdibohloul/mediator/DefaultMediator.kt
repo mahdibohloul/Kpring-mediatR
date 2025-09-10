@@ -7,10 +7,11 @@ import io.github.mahdibohloul.mediator.notification.Notification
 import io.github.mahdibohloul.mediator.notification.NotificationHandler
 import io.github.mahdibohloul.mediator.request.Request
 import io.github.mahdibohloul.mediator.request.RequestHandler
-import kotlinx.coroutines.async
-import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.ApplicationContext
 import org.springframework.stereotype.Component
 
@@ -25,6 +26,8 @@ import org.springframework.stereotype.Component
 @Component
 class DefaultMediator(
   private val factory: ComponentFactory,
+  @Qualifier("notificationCoroutineScope")
+  private val notificationCoroutineScope: CoroutineScope,
 ) : Mediator {
 
   override suspend fun <TRequest : Request<TResponse>, TResponse> sendAsync(request: TRequest): TResponse {
@@ -40,25 +43,24 @@ class DefaultMediator(
   }
 
   override suspend fun publishAsync(notification: Notification) {
-    supervisorScope {
-      try {
-        val notificationHandlers = factory.getNotificationHandlers(notification::class)
-        notificationHandlers.forEach { handler ->
-          async(handler.getCoroutineDispatcher()) {
-            logger.debug(
-              "The ${notification::class.simpleName} notification publish async " +
-                "and handled by ${handler::class.simpleName} in ${Thread.currentThread().name} thread",
-            )
-            try {
-              handler.handle(notification)
-            } catch (e: Exception) {
-              publishAsync(notification, e)
-            }
+    try {
+      val notificationHandlers = factory.getNotificationHandlers(notification::class)
+      notificationHandlers.forEach { handler ->
+        // Launch each handler in its own coroutine (fire-and-forget)
+        notificationCoroutineScope.launch(handler.getCoroutineDispatcher()) {
+          logger.debug(
+            "The ${notification::class.simpleName} notification publish async " +
+              "and handled by ${handler::class.simpleName} in ${Thread.currentThread().name} thread",
+          )
+          try {
+            handler.handle(notification)
+          } catch (e: Exception) {
+            publishAsync(notification, e)
           }
         }
-      } catch (e: NoNotificationHandlersException) {
-        logger.warn("No notification handlers found for notification: ${notification::class.qualifiedName}", e)
       }
+    } catch (e: NoNotificationHandlersException) {
+      logger.warn("No notification handlers found for notification: ${notification::class.qualifiedName}", e)
     }
   }
 
@@ -66,11 +68,12 @@ class DefaultMediator(
     notification: TNotification,
     exception: TException,
   ) {
-    supervisorScope {
+    try {
       val notificationExceptionHandler =
         factory.getNotificationExceptionHandlers(notification::class, exception::class)
       notificationExceptionHandler.forEach { handler ->
-        async(handler.getCoroutineDispatcher()) {
+        // Launch each exception handler in its own coroutine (fire-and-forget)
+        notificationCoroutineScope.launch(handler.getCoroutineDispatcher()) {
           logger.info(
             "The ${notification::class.simpleName} notification and ${exception::class.simpleName} publish async " +
               "and handled by ${handler::class.simpleName} in ${Thread.currentThread().name} thread",
@@ -78,6 +81,11 @@ class DefaultMediator(
           handler.handle(notification, exception)
         }
       }
+    } catch (e: Exception) {
+      logger.error(
+        "Failed to handle exception for notification ${notification::class.simpleName}: ${e.message}",
+        e,
+      )
     }
   }
 

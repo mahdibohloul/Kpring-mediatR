@@ -28,13 +28,19 @@ repositories {
 dependencies {
   implementation("org.springframework:spring-context:6.2.10")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.9.0")
   implementation("org.slf4j:slf4j-api:2.0.17")
   implementation("org.springframework.boot:spring-boot-autoconfigure:3.5.5")
 
   testImplementation("org.springframework.boot:spring-boot-starter-test:3.5.5")
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:1.9.23")
+  testImplementation("io.projectreactor:reactor-test:3.7.9")
+  testImplementation("io.projectreactor:reactor-core:3.7.9")
+  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.9.0")
 
   testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
 }
 
 kotlin {

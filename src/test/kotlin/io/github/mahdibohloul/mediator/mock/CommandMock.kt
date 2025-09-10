@@ -1,4 +1,4 @@
-package io.mahdibohloul.kpringmediator.mock
+package io.github.mahdibohloul.mediator.mock
 
 import io.github.mahdibohloul.mediator.command.Command
 import io.github.mahdibohloul.mediator.command.CommandHandler

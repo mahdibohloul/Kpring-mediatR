@@ -1,12 +1,12 @@
 package io.github.mahdibohloul.mediator.factories
 
-import io.github.mahdibohloul.mediator.command.Command
-import io.github.mahdibohloul.mediator.command.CommandHandler
 import io.github.mahdibohloul.mediator.DuplicateCommandHandlerRegistrationException
 import io.github.mahdibohloul.mediator.DuplicateRequestHandlerRegistrationException
 import io.github.mahdibohloul.mediator.NoCommandHandlerException
 import io.github.mahdibohloul.mediator.NoNotificationHandlersException
 import io.github.mahdibohloul.mediator.NoRequestHandlerException
+import io.github.mahdibohloul.mediator.command.Command
+import io.github.mahdibohloul.mediator.command.CommandHandler
 import io.github.mahdibohloul.mediator.notification.Notification
 import io.github.mahdibohloul.mediator.notification.NotificationExceptionHandler
 import io.github.mahdibohloul.mediator.notification.NotificationHandler
@@ -20,8 +20,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationContext
 import org.springframework.core.GenericTypeResolver
-import kotlin.reflect.KClass
 import org.springframework.stereotype.Component
+import kotlin.reflect.KClass
 
 /**
  * @author Mahdi Bohloul

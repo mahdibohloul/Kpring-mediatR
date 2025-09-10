@@ -1,4 +1,4 @@
-package io.mahdibohloul.kpringmediator.mock
+package io.github.mahdibohloul.mediator.mock
 
 import io.github.mahdibohloul.mediator.request.Request
 import io.github.mahdibohloul.mediator.request.RequestHandler

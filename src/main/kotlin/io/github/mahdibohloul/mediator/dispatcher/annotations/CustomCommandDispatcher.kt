@@ -1,9 +1,9 @@
 package io.github.mahdibohloul.mediator.dispatcher.annotations
 
 import io.github.mahdibohloul.mediator.command.Command
-import kotlin.reflect.KClass
 import org.springframework.core.annotation.AliasFor
 import org.springframework.stereotype.Component
+import kotlin.reflect.KClass
 
 /**
  * Annotation used to mark a class as a custom command dispatcher in a Spring-based application.
