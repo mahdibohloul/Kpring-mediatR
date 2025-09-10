@@ -7,8 +7,10 @@ import io.github.mahdibohloul.mediator.notification.Notification
 import io.github.mahdibohloul.mediator.publisher.factories.NotificationPublisherFactory
 import io.github.mahdibohloul.mediator.request.Request
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Primary
 import org.springframework.stereotype.Component
 
@@ -19,6 +21,8 @@ class MediatorImpl(
   private val publisherFactory: NotificationPublisherFactory,
   private val requestFactory: RequestDispatcherFactory,
   private val commandFactory: CommandDispatcherFactory,
+  @Qualifier("notificationCoroutineScope")
+  private val notificationCoroutineScope: CoroutineScope,
 ) : Mediator {
   override suspend fun sendAsync(
     command: Command,
@@ -35,9 +39,21 @@ class MediatorImpl(
     ?: defaultMediator.sendAsync(request)
 
   override suspend fun publishAsync(notification: Notification) {
-    CoroutineScope(Dispatchers.Default).launch {
-      publisherFactory.getNotificationPublisher(notification)?.publishAsync(notification)
-        ?: defaultMediator.publishAsync(notification)
+    try {
+      val customPublisher = publisherFactory.getNotificationPublisher(notification)
+      if (customPublisher != null) {
+        notificationCoroutineScope.launch {
+          customPublisher.publishAsync(notification)
+        }
+      } else {
+        defaultMediator.publishAsync(notification)
+      }
+    } catch (e: Exception) {
+      logger.error("Failed to publish notification ${notification::class.simpleName}", e)
     }
+  }
+
+  private companion object {
+    val logger: Logger = LoggerFactory.getLogger(MediatorImpl::class.java)
   }
 }
