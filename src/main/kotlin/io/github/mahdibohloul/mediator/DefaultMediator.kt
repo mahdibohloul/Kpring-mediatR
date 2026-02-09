@@ -74,7 +74,7 @@ class DefaultMediator(
       notificationExceptionHandler.forEach { handler ->
         // Launch each exception handler in its own coroutine (fire-and-forget)
         notificationCoroutineScope.launch(handler.getCoroutineDispatcher()) {
-          logger.info(
+          logger.debug(
             "The ${notification::class.simpleName} notification and ${exception::class.simpleName} publish async " +
               "and handled by ${handler::class.simpleName} in ${Thread.currentThread().name} thread",
           )
